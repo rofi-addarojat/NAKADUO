@@ -2,7 +2,7 @@ import React from 'react';
 import { ArrowRight, Menu, X, ShieldCheck, Scissors, TrendingUp, Activity, Tag, Check, Ruler, RefreshCw, Truck } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform } from 'motion/react';
-import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc, setDoc } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from './firebase';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
@@ -140,12 +140,12 @@ function Hero({ content }: { content: any }) {
   const mainImageParallax = useTransform(scrollY, [0, 1000], [0, 120]);
   
   return (
-    <section id="home" className="relative min-h-[100svh] flex flex-col lg:flex-row items-center justify-center bg-brand-canvas pt-24 lg:pt-0 overflow-hidden">
+    <section id="home" className="relative min-h-[100svh] flex flex-col lg:flex-row items-center justify-center bg-brand-charcoal pt-24 lg:pt-0 overflow-hidden">
       
       {/* Background Decorative Elements */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-stone-200/50 rounded-full blur-[100px] mix-blend-multiply"></div>
-        <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#E5E0D8]/40 rounded-full blur-[100px] mix-blend-multiply"></div>
+        <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-stone-800/50 rounded-full blur-[100px] mix-blend-screen"></div>
+        <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#2a2a2a]/40 rounded-full blur-[100px] mix-blend-screen"></div>
       </div>
 
       <div className="max-w-[90rem] mx-auto w-full px-4 sm:px-6 lg:px-12 flex flex-col lg:flex-row items-center gap-12 lg:gap-16 relative z-10">
@@ -162,24 +162,24 @@ function Hero({ content }: { content: any }) {
             <span className="text-brand-bronze font-mono uppercase tracking-[0.25em] text-[10px] sm:text-xs font-semibold">Premium Imports</span>
           </div>
 
-          <h1 className="text-5xl sm:text-7xl lg:text-[5rem] xl:text-8xl font-serif text-brand-charcoal leading-[0.95] tracking-[-0.02em] mb-8">
+          <h1 className="text-5xl sm:text-7xl lg:text-[5rem] xl:text-8xl font-serif text-white leading-[0.95] tracking-[-0.02em] mb-8">
             {headlineParts[0]}
             <br />
-            <span className="italic font-light text-stone-500 lg:pl-16 sm:pl-8 block mt-3">
+            <span className="italic font-light text-stone-400 lg:pl-16 sm:pl-8 block mt-3">
               {headlineParts.length > 1 ? `dalam ${headlineParts[1]}` : content.tagline}
             </span>
           </h1>
           
-          <p className="text-base sm:text-lg text-stone-500 max-w-md leading-relaxed font-light mb-12 border-l border-brand-bronze/30 pl-6 ml-2">
+          <p className="text-base sm:text-lg text-stone-400 max-w-md leading-relaxed font-light mb-12 border-l border-brand-bronze/30 pl-6 ml-2">
             {content.description}
           </p>
 
           <div className="flex flex-wrap items-center gap-8 ml-2">
-            <a href="#collection" className="inline-flex items-center justify-center gap-4 bg-brand-charcoal text-brand-canvas px-8 py-5 text-[10px] sm:text-xs tracking-[0.2em] uppercase hover:bg-brand-bronze transition-all duration-500 group shadow-xl hover:-translate-y-1">
+            <a href="#collection" className="inline-flex items-center justify-center gap-4 bg-white text-brand-charcoal px-8 py-5 text-[10px] sm:text-xs tracking-[0.2em] uppercase hover:bg-brand-bronze hover:text-white transition-all duration-500 group shadow-xl hover:-translate-y-1">
               <span>Jelajahi Koleksi</span> 
               <ArrowRight className="h-4 w-4 group-hover:translate-x-2 transition-transform duration-300" />
             </a>
-            <a href="#gallery" className="text-[10px] sm:text-xs font-mono tracking-[0.15em] uppercase text-stone-500 hover:text-brand-charcoal transition-colors flex items-center gap-2 relative after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-full after:h-[1px] after:bg-brand-bronze/0 hover:after:bg-brand-bronze/100 after:transition-all">
+            <a href="#gallery" className="text-[10px] sm:text-xs font-mono tracking-[0.15em] uppercase text-stone-400 hover:text-white transition-colors flex items-center gap-2 relative after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-full after:h-[1px] after:bg-brand-bronze/0 hover:after:bg-brand-bronze/100 after:transition-all">
               Lihat Galeri
             </a>
           </div>
