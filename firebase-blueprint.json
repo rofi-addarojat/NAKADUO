@@ -28,6 +28,21 @@
       },
       "required": ["name", "price", "imageUrl", "countryOfOrigin", "fit", "stock", "createdAt", "updatedAt"]
     },
+    "Article": {
+      "title": "Article",
+      "description": "Blog post or article",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "slug": { "type": "string" },
+        "content": { "type": "string" },
+        "excerpt": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["title", "slug", "content", "excerpt", "imageUrl", "createdAt", "updatedAt"]
+    },
     "Content": {
       "title": "Content",
       "description": "Landing page dynamic content",
@@ -61,6 +76,10 @@
     "/products/{productId}": {
       "schema": { "$ref": "#/entities/Product" },
       "description": "Store products catalog"
+    },
+    "/articles/{articleId}": {
+      "schema": { "$ref": "#/entities/Article" },
+      "description": "Store articles and blog posts"
     },
     "/siteContent/landingPage": {
       "schema": { "$ref": "#/entities/Content" },

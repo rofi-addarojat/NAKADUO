@@ -53,6 +53,28 @@ service cloud.firestore {
         && (!('marketplaceLink' in data) || (data.marketplaceLink is string && data.marketplaceLink.size() <= 2000));
     }
 
+    function isValidArticleCreate(data) {
+      return data.keys().hasAll(['title', 'slug', 'content', 'excerpt', 'imageUrl', 'createdAt', 'updatedAt'])
+        && data.keys().size() == 7
+        && data.title is string && data.title.size() > 0 && data.title.size() <= 200
+        && data.slug is string && data.slug.size() > 0 && data.slug.size() <= 200 && data.slug.matches('^[a-z0-9\\-]+$')
+        && data.content is string && data.content.size() <= 50000
+        && data.excerpt is string && data.excerpt.size() <= 1000
+        && data.imageUrl is string && data.imageUrl.size() <= 2000
+        && data.createdAt == request.time
+        && data.updatedAt == request.time;
+    }
+    
+    function isValidArticleUpdate(data) {
+      return data.title is string && data.title.size() > 0 && data.title.size() <= 200
+        && data.slug is string && data.slug.size() > 0 && data.slug.size() <= 200 && data.slug.matches('^[a-z0-9\\-]+$')
+        && data.content is string && data.content.size() <= 50000
+        && data.excerpt is string && data.excerpt.size() <= 1000
+        && data.imageUrl is string && data.imageUrl.size() <= 2000
+        && data.createdAt == existing().createdAt
+        && data.updatedAt == request.time;
+    }
+
     // Admins
     match /admins/{userId} {
       allow get: if isSignedIn() && (request.auth.uid == userId || isAdmin());
@@ -74,6 +96,20 @@ service cloud.firestore {
       );
       
       allow delete: if isAdmin() && isValidId(productId);
+    }
+    
+    // Articles
+    match /articles/{articleId} {
+      allow get: if isValidId(articleId) && true;
+      allow list: if true;
+      
+      allow create: if isAdmin() && isValidId(articleId) && isValidArticleCreate(incoming());
+      
+      allow update: if isAdmin() && isValidId(articleId) && isValidArticleUpdate(incoming()) && (
+        incoming().diff(existing()).affectedKeys().hasOnly(['title', 'slug', 'content', 'excerpt', 'imageUrl', 'updatedAt'])
+      );
+      
+      allow delete: if isAdmin() && isValidId(articleId);
     }
     
     // siteContent

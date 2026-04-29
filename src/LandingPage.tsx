@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'motion/react';
 import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from './firebase';
+import { Link } from 'react-router-dom';
 
 export default function LandingPage() {
   const [products, setProducts] = useState<any[]>([]);
@@ -31,7 +32,20 @@ export default function LandingPage() {
       try {
         const contentSnap = await getDoc(doc(db, 'siteContent', 'landingPage'));
         if (contentSnap.exists()) {
-          setContent(contentSnap.data() as any);
+          const data = contentSnap.data() as any;
+          if (data.headline === "Investasi Gaya dalam Setiap Langkahmu.") {
+             const newContent = {
+                headline: "Esensi Ketegasan dalam Gaya Autentik.",
+                description: "Dikurasi khusus untuk pria yang memahami bahwa kualitas tidak bisa dikompromikan. Koleksi denim impor dan streetwear dengan material premium yang membentuk karakter Anda.",
+                tagline: "Gaya Autentik.",
+                updatedAt: new Date().toISOString()
+             };
+             // Optional: Don't strictly await the setDoc to not block render, but it should be fast
+             setDoc(doc(db, 'siteContent', 'landingPage'), newContent, { merge: true }).catch(console.error);
+             setContent(newContent);
+          } else {
+             setContent(data);
+          }
         }
       } catch (err) {
         handleFirestoreError(err, OperationType.GET, 'siteContent/landingPage');
@@ -75,12 +89,13 @@ function Navbar() {
             <span className="font-serif text-2xl font-semibold tracking-[0.2em] text-brand-charcoal">NAKADUO<span className="text-brand-bronze font-sans">.</span></span>
           </div>
           <div className="hidden md:flex items-center space-x-10">
-            <a href="#home" className="hover:text-brand-bronze transition-colors text-[11px] uppercase tracking-[0.15em] font-medium">Home</a>
-            <a href="#collection" className="hover:text-brand-bronze transition-colors text-[11px] uppercase tracking-[0.15em] font-medium">Collection</a>
-            <a href="#care" className="hover:text-brand-bronze transition-colors text-[11px] uppercase tracking-[0.15em] font-medium">Care Guide</a>
-            <a href="#gallery" className="hover:text-brand-bronze transition-colors text-[11px] uppercase tracking-[0.15em] font-medium">Gallery</a>
+            <a href="#home" className="hover:text-brand-bronze transition-colors text-[11px] uppercase tracking-[0.15em] font-medium">Beranda</a>
+            <a href="#collection" className="hover:text-brand-bronze transition-colors text-[11px] uppercase tracking-[0.15em] font-medium">Koleksi</a>
+            <a href="#care" className="hover:text-brand-bronze transition-colors text-[11px] uppercase tracking-[0.15em] font-medium">Panduan</a>
+            <a href="#gallery" className="hover:text-brand-bronze transition-colors text-[11px] uppercase tracking-[0.15em] font-medium">Galeri</a>
+            <Link to="/blog" className="hover:text-brand-bronze transition-colors text-[11px] uppercase tracking-[0.15em] font-medium">Jurnal</Link>
             <a href="#collection" className="border border-brand-charcoal text-brand-charcoal px-8 py-3 text-[11px] uppercase tracking-[0.15em] font-medium hover:bg-brand-charcoal hover:text-white transition-colors">
-              Cek Koleksi
+              Jelajahi Koleksi
             </a>
           </div>
           <div className="md:hidden flex items-center">
@@ -93,12 +108,13 @@ function Navbar() {
       {isOpen && (
         <div className="md:hidden bg-brand-canvas border-t border-brand-charcoal/5">
           <div className="px-4 pt-4 pb-8 space-y-6">
-             <a href="#home" onClick={() => setIsOpen(false)} className="block text-sm uppercase tracking-widest font-medium hover:text-brand-bronze">Home</a>
-             <a href="#collection" onClick={() => setIsOpen(false)} className="block text-sm uppercase tracking-widest font-medium hover:text-brand-bronze">Collection</a>
-             <a href="#care" onClick={() => setIsOpen(false)} className="block text-sm uppercase tracking-widest font-medium hover:text-brand-bronze">Care Guide</a>
-             <a href="#gallery" onClick={() => setIsOpen(false)} className="block text-sm uppercase tracking-widest font-medium hover:text-brand-bronze">Gallery</a>
+             <a href="#home" onClick={() => setIsOpen(false)} className="block text-sm uppercase tracking-widest font-medium hover:text-brand-bronze">Beranda</a>
+             <a href="#collection" onClick={() => setIsOpen(false)} className="block text-sm uppercase tracking-widest font-medium hover:text-brand-bronze">Koleksi</a>
+             <a href="#care" onClick={() => setIsOpen(false)} className="block text-sm uppercase tracking-widest font-medium hover:text-brand-bronze">Panduan</a>
+             <a href="#gallery" onClick={() => setIsOpen(false)} className="block text-sm uppercase tracking-widest font-medium hover:text-brand-bronze">Galeri</a>
+             <Link to="/blog" onClick={() => setIsOpen(false)} className="block text-sm uppercase tracking-widest font-medium hover:text-brand-bronze">Jurnal</Link>
              <a href="#collection" onClick={() => setIsOpen(false)} className="block w-full text-center bg-brand-charcoal text-white px-3 py-4 mt-6 text-sm uppercase tracking-widest font-medium">
-              Cek Koleksi
+              Jelajahi Koleksi
             </a>
           </div>
         </div>
@@ -136,7 +152,7 @@ function Hero({ content }: { content: any }) {
           </p>
           <div className="pt-6 lg:ml-12">
             <a href="#collection" className="inline-flex items-center justify-center gap-4 bg-brand-charcoal text-white px-10 py-5 text-[11px] tracking-[0.2em] uppercase hover:bg-black transition-all group">
-              <span>Explore Catalog</span> 
+              <span>Jelajahi Sekarang</span> 
               <ArrowRight className="h-4 w-4 group-hover:translate-x-2 transition-transform duration-300" />
             </a>
           </div>
@@ -168,13 +184,13 @@ function Hero({ content }: { content: any }) {
 
 function WhySection() {
   const points = [
-    { icon: ShieldCheck, title: "Bahan Premium", desc: "Denim berkualitas tinggi yang teruji secara ketat." },
-    { icon: Scissors, title: "Jahitan Rapi", desc: "Detail presisi kuat untuk keawetan pemakaian panjang." },
-    { icon: TrendingUp, title: "Desain Kekinian", desc: "Potongan Slim, Regular, dan Skinny Fit maskulin modern." },
+    { icon: ShieldCheck, title: "Material Autentik", desc: "Denim impor kelas berat dan material dengan durabilitas tinggi yang teruji untuk pemakaian ekstrem." },
+    { icon: Scissors, title: "Konstruksi Presisi", desc: "Kekuatan jahitan rantai dan perkuatan struktur untuk keawetan mutlak tanpa kompromi." },
+    { icon: TrendingUp, title: "Siluet Modern", desc: "Potongan arsitektural yang dirancang khusus untuk menyempurnakan postur dengan gaya kontemporer." },
   ];
   const points2 = [
-    { icon: Activity, title: "Nyaman Dipakai", desc: "Material lentur yang sama sekali tidak membatasi gerak." },
-    { icon: Tag, title: "Harga Bersahabat", desc: "Kualitas mewah internasional, dengan harga rasional." },
+    { icon: Activity, title: "Kenyamanan Maksimal", desc: "Tenunan inovatif yang memberikan fleksibilitas pergerakan tanpa mengorbankan ketebalan fabrik." },
+    { icon: Tag, title: "Nilai Tanpa Tanding", desc: "Standar craftsmanship luxury internasional, dengan aksesibilitas harga yang sepenuhnya rasional." },
   ]
 
   return (
@@ -182,11 +198,11 @@ function WhySection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-8">
           <div className="max-w-2xl">
-            <span className="text-brand-bronze font-mono uppercase tracking-[0.2em] text-xs mb-4 block">Craftsmanship</span>
-            <h2 className="text-5xl lg:text-7xl font-serif text-brand-canvas leading-none">Why <br/><span className="italic text-stone-400">NAKADUO?</span></h2>
+            <span className="text-brand-bronze font-mono uppercase tracking-[0.2em] text-xs mb-4 block">Standar Tanpa Kompromi</span>
+            <h2 className="text-5xl lg:text-7xl font-serif text-brand-canvas leading-none">Kualitas <br/><span className="italic text-stone-400">Tanpa Kompromi</span></h2>
           </div>
           <p className="text-stone-400 font-light max-w-sm text-sm leading-relaxed md:text-right">
-            Kami mengedepankan kualitas dan ketangguhan. Denim impor asli dengan kurasi ketat untuk menjamin daya tahan puluhan tahun.
+            Seluruh koleksi kami melalui proses kurasi ketat, memastikan setiap elemen dari material hingga jahitan merepresentasikan standar pergerakan gaya hidup modern.
           </p>
         </div>
 
@@ -243,7 +259,7 @@ function CollectionSection({ products, waAdmin }: { products: any[], waAdmin: st
         <div className="flex justify-between items-end mb-20 pb-8 border-b border-stone-200">
           <div>
             <span className="text-brand-bronze font-mono uppercase tracking-[0.2em] text-[10px] mb-4 block">The Collection</span>
-            <h2 className="text-5xl lg:text-7xl font-serif text-brand-charcoal mb-4">Katalog <span className="italic font-light">Impor</span></h2>
+            <h2 className="text-5xl lg:text-7xl font-serif text-brand-charcoal mb-4">Koleksi <span className="italic font-light">Pilihan</span></h2>
           </div>
         </div>
 
@@ -330,9 +346,9 @@ function CareGuideSection() {
         <div className="flex flex-col lg:flex-row gap-16 lg:gap-24">
           <div className="flex-1">
              <div className="mb-16">
-                <span className="text-brand-bronze font-mono uppercase tracking-[0.2em] text-[10px] mb-4 block">Longevity</span>
-                <h2 className="text-5xl lg:text-7xl font-serif text-brand-charcoal mb-6 leading-none">Denim <br/><span className="italic font-light text-stone-400">Care Guide</span></h2>
-                <p className="text-stone-500 text-lg font-light leading-relaxed max-w-md">Rawat denim Anda dengan benar untuk mempertahankan warna asli dan tekstur kuatnya selama bertahun-tahun.</p>
+                <span className="text-brand-bronze font-mono uppercase tracking-[0.2em] text-[10px] mb-4 block">Seni Merawat Denim</span>
+                <h2 className="text-5xl lg:text-7xl font-serif text-brand-charcoal mb-6 leading-none">Panduan <br/><span className="italic font-light text-stone-400">Perawatan</span></h2>
+                <p className="text-stone-500 text-lg font-light leading-relaxed max-w-md">Sebuah investasi perlu dirawat. Panduan kami untuk memastikan denim Anda tidak sekadar memudar, melainkan bertransformasi menjadi karya seni yang sarat cerita.</p>
              </div>
              
              <div className="aspect-square bg-stone-200 overflow-hidden shrink-0 hidden lg:block">
@@ -369,8 +385,8 @@ function GallerySection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-20">
           <span className="text-brand-bronze font-mono uppercase tracking-[0.2em] text-[10px] mb-4 block">Visual Evidence</span>
-          <h2 className="text-5xl lg:text-6xl font-serif text-brand-canvas mb-4 tracking-tight">Testimoni & <span className="italic font-light">Gallery</span></h2>
-          <p className="text-stone-400 font-light max-w-lg mx-auto">Jejak kepuasan pelanggan dan keaslian produk NAKADUO. Bukti dari kualitas yang berbicara sendiri.</p>
+          <h2 className="text-5xl lg:text-6xl font-serif text-brand-canvas mb-4 tracking-tight">Testimoni & <span className="italic font-light">Galeri</span></h2>
+          <p className="text-stone-400 font-light max-w-lg mx-auto">Mereka yang telah merasakan standar tinggi kami. Ini bukan sekadar pakaian, melainkan tentang rasa percaya diri dan karakter.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-[1px] auto-rows-[300px] bg-brand-charcoal border border-brand-canvas/10">
@@ -409,9 +425,9 @@ function GallerySection() {
 
 function FAQSection() {
   const faqs = [
-    { q: "Bagaimana cara menentukan ukuran yang tepat?", a: "Kami menyediakan Size Chart akurat di setiap deskripsi produk Marketplace kami. Disarankan mengukur lingkar pinggang celana lama Anda sebagai perbandingan." },
-    { q: "Apakah melayani pengiriman ke seluruh Indonesia?", a: "Tentu. Kami bekerjasama dengan kurir terpercaya untuk memastikan paket denim Anda sampai dengan aman dan cepat, dari Sabang sampai Merauke." },
-    { q: "Apakah ada garansi penukaran barang?", a: "Ya, kami menerima retur size (Tukar Ukuran) maksimal H+2 setelah barang diterima, dengan syarat tag belum dilepas dan celana belum dicuci." }
+    { q: "Bagaimana cara memastikan ukuran yang presisi?", a: "Setiap profil produk kami dilengkapi dengan Size Chart mendetail. Kami merekomendasikan Anda untuk mengukur lingkar pinggang celana favorit yang Anda miliki saat ini sebagai parameter yang paling akurat." },
+    { q: "Apakah melayani pengiriman ke luar pulau?", a: "Tentu. Kami bermitra dengan layanan logistik tier-1 untuk memastikan pesanan Anda tiba dengan aman, terjamin, dan tepat waktu ke seluruh penjuru Indonesia." },
+    { q: "Bagaimana kebijakan pengembalian produk?", a: "Komitmen kepuasan Anda adalah prioritas. Kami menerima penukaran ukuran (size exchange) maksimal 48 jam sejak paket diterima, dengan ketentuan produk dalam kondisi orisinal, belum dicuci, dan seluruh label tanda pengenal masih terpasang." }
   ];
 
   const [open, setOpen] = useState<number | null>(0);
@@ -421,7 +437,7 @@ function FAQSection() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <span className="text-brand-bronze font-mono uppercase tracking-[0.2em] text-[10px] mb-4 block">Information</span>
-          <h2 className="text-4xl font-serif text-brand-charcoal">Frequently Asked Questions</h2>
+          <h2 className="text-4xl font-serif text-brand-charcoal">Pertanyaan Umum (FAQ)</h2>
         </div>
         
         <div className="space-y-0 border-y border-brand-charcoal/10">
@@ -476,6 +492,7 @@ function Footer({ waAdmin }: { waAdmin: string }) {
         <div className="pt-8 border-t border-brand-canvas/10 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] font-mono tracking-widest text-stone-500 uppercase">
           <span>© {new Date().getFullYear()} NAKADUO. All rights reserved.</span>
           <div className="space-x-6">
+            <Link to="/blog" className="hover:text-white transition-colors">Journal</Link>
             <a href="#" className="hover:text-white transition-colors">Privacy</a>
             <a href="#" className="hover:text-white transition-colors">Terms</a>
             <a href="#" className="hover:text-white transition-colors">Shipping</a>
