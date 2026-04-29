@@ -4,6 +4,7 @@ import { db } from './firebase';
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { ArrowLeft } from 'lucide-react';
+import { Helmet } from 'react-helmet-async';
 
 export default function Blog() {
   const [articles, setArticles] = useState<any[]>([]);
@@ -26,6 +27,12 @@ export default function Blog() {
 
   return (
     <div className="min-h-screen bg-brand-canvas text-brand-charcoal pt-24 pb-32">
+      <Helmet>
+        <title>Journal & Lookbook | NAKADUO</title>
+        <meta name="description" content="Inspirasi, panduan gaya, dan cerita di balik kultus denim dan streetwear impor dari NAKADUO." />
+        <meta property="og:title" content="Journal & Lookbook | NAKADUO" />
+        <meta property="og:description" content="Inspirasi, panduan gaya, dan cerita di balik kultus denim dan streetwear impor dari NAKADUO." />
+      </Helmet>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-12">
           <Link to="/" className="inline-flex items-center text-sm font-mono tracking-widest uppercase hover:text-brand-bronze transition-colors">

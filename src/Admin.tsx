@@ -12,6 +12,8 @@ export default function Admin() {
     headline: "Esensi Ketegasan dalam Gaya Autentik.",
     description: "Dikurasi khusus untuk pria yang memahami bahwa kualitas tidak bisa dikompromikan. Koleksi denim impor dan streetwear dengan material premium yang membentuk karakter Anda.",
     tagline: "Gaya Autentik.",
+    metaKeywords: "denim impor, raw denim, selvedge denim, streetwear pria, celana jeans premium, jaket denim, fashion pria modern, NAKADUO",
+    metaAuthor: "NAKADUO"
   });
   
   // Settings State
@@ -249,8 +251,16 @@ export default function Admin() {
               <input value={content.tagline} onChange={e => setContent({...content, tagline: e.target.value})} className="w-full border p-2" />
             </div>
             <div>
-              <label className="block text-sm text-stone-600 mb-1">Deskripsi Utama</label>
+              <label className="block text-sm text-stone-600 mb-1">Deskripsi Utama (Meta Description)</label>
               <textarea value={content.description} onChange={e => setContent({...content, description: e.target.value})} className="w-full border p-2 h-24" />
+            </div>
+            <div>
+              <label className="block text-sm text-stone-600 mb-1">Meta Keywords (pisahkan dengan koma)</label>
+              <input value={content.metaKeywords} onChange={e => setContent({...content, metaKeywords: e.target.value})} className="w-full border p-2" />
+            </div>
+            <div>
+              <label className="block text-sm text-stone-600 mb-1">Meta Author</label>
+              <input value={content.metaAuthor} onChange={e => setContent({...content, metaAuthor: e.target.value})} className="w-full border p-2" />
             </div>
             <button onClick={handleSaveContent} className="bg-brand-charcoal text-white px-4 py-2 mt-2">Simpan Konten</button>
           </div>

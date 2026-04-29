@@ -1,10 +1,11 @@
 import React from 'react';
 import { ArrowRight, Menu, X, ShieldCheck, Scissors, TrendingUp, Activity, Tag, Check, Ruler, RefreshCw, Truck } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform } from 'motion/react';
 import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from './firebase';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 
 export default function LandingPage() {
   const [products, setProducts] = useState<any[]>([]);
@@ -65,6 +66,15 @@ export default function LandingPage() {
 
   return (
     <div className="bg-brand-canvas min-h-screen selection:bg-brand-bronze selection:text-white">
+      <Helmet>
+        <title>NAKADUO | Premium Imported Denim & Streetwear</title>
+        <meta name="description" content={content.description || "Koleksi denim impor premium dan streetwear autentik dengan kualitas tanpa kompromi."} />
+        <meta name="keywords" content={(content as any).metaKeywords || "denim impor, raw denim, selvedge denim, streetwear pria, celana jeans premium, jaket denim, fashion pria modern, NAKADUO"} />
+        {(content as any).metaAuthor && <meta name="author" content={(content as any).metaAuthor} />}
+        <meta property="og:title" content="NAKADUO | Premium Imported Denim & Streetwear" />
+        <meta property="og:description" content={content.description || "Koleksi denim impor premium dan streetwear autentik dengan kualitas tanpa kompromi."} />
+        <meta property="og:url" content="https://nakaduo.com/" />
+      </Helmet>
       <Navbar />
       <main>
         <Hero content={content} />
@@ -292,6 +302,81 @@ function WhySection() {
   );
 }
 
+function ProductCard({ p, idx, waAdmin, formatIDR }: { p: any, idx: number, waAdmin: string, formatIDR: (price: number) => string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"]
+  });
+  
+  const y = useTransform(scrollYProgress, [0, 1], ["-15%", "15%"]);
+
+  return (
+    <motion.div 
+      ref={ref}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: idx * 0.1, duration: 0.8, ease: "easeOut" }}
+      className="group flex flex-col bg-white border border-transparent hover:border-stone-200 transition-all duration-500 shadow-sm hover:shadow-[0_30px_60px_rgba(26,26,26,0.12)] hover:-translate-y-2 hover:scale-[1.02] relative"
+    >
+      <div className="relative aspect-[4/5] overflow-hidden bg-stone-100">
+        {p.imageUrl ? (
+          <motion.img 
+            style={{ y }}
+            src={p.imageUrl} 
+            alt={p.name} 
+            className="absolute top-[-20%] left-0 w-full h-[140%] object-cover object-center group-hover:scale-105 transition-transform duration-[1.5s] ease-out origin-center"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-stone-300 font-mono text-xs uppercase relative z-10">No Image</div>
+        )}
+        {p.countryOfOrigin && (
+          <div className="absolute top-0 right-0 bg-brand-charcoal text-white text-[9px] z-20 font-mono px-3 py-1.5 tracking-[0.15em] uppercase">
+            {p.countryOfOrigin}
+          </div>
+        )}
+        
+        {/* Subtle gradient overlay on hover */}
+        <div className="absolute inset-0 bg-brand-charcoal/0 group-hover:bg-brand-charcoal/10 transition-colors duration-500 pointer-events-none z-10"></div>
+      </div>
+      
+      <div className="p-8 flex flex-col flex-grow relative z-20 bg-white">
+        <div className="flex justify-between items-start mb-4">
+          <h3 className="text-xl font-serif text-brand-charcoal">{p.name}</h3>
+          <p className="text-brand-charcoal font-medium text-lg tracking-wide">{formatIDR(p.price)}</p>
+        </div>
+        
+        <div className="flex items-center gap-4 text-[10px] font-mono text-stone-500 uppercase tracking-widest mb-8">
+          <span className="border border-stone-200 px-2 py-1">{p.fit}</span>
+          <span>Stok: <span className="text-brand-charcoal font-semibold">{p.stock}</span></span>
+        </div>
+        
+        <div className="mt-auto grid grid-cols-2 gap-3 opacity-90 group-hover:opacity-100 transition-opacity">
+          <a 
+            href={`https://wa.me/${waAdmin}?text=Halo%20Admin%20NAKADUO,%20saya%20tertarik%20dengan%20produk%20${encodeURIComponent(p.name)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="col-span-2 bg-brand-charcoal text-white text-center py-4 text-[10px] tracking-[0.15em] font-medium uppercase hover:bg-black transition-colors border border-brand-charcoal"
+          >
+            Beli via WhatsApp
+          </a>
+          {p.marketplaceLink && (
+             <a 
+               href={p.marketplaceLink}
+               target="_blank"
+               rel="noopener noreferrer"
+               className="col-span-2 bg-transparent text-brand-charcoal text-center py-3 text-[10px] tracking-[0.15em] font-medium uppercase hover:bg-stone-50 transition-colors border border-stone-200"
+             >
+               Lihat di Marketplace
+             </a>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 function CollectionSection({ products, waAdmin }: { products: any[], waAdmin: string }) {
   const formatIDR = (price: number) => {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(price);
@@ -314,67 +399,7 @@ function CollectionSection({ products, waAdmin }: { products: any[], waAdmin: st
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 xl:gap-12">
             {products.map((p, idx) => (
-              <motion.div 
-                key={p.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.1, duration: 0.8, ease: "easeOut" }}
-                className="group flex flex-col bg-white border border-transparent hover:border-stone-200 transition-all duration-500 shadow-sm hover:shadow-[0_30px_60px_rgba(26,26,26,0.12)] hover:-translate-y-2 hover:scale-[1.02] relative"
-              >
-                <div className="relative aspect-[4/5] overflow-hidden bg-stone-100">
-                  {p.imageUrl ? (
-                    <img 
-                      src={p.imageUrl} 
-                      alt={p.name} 
-                      className="w-full h-full object-cover object-center scale-100 group-hover:scale-110 transition-transform duration-[1.5s] ease-out"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-stone-300 font-mono text-xs uppercase">No Image</div>
-                  )}
-                  {p.countryOfOrigin && (
-                    <div className="absolute top-0 right-0 bg-brand-charcoal text-white text-[9px] font-mono px-3 py-1.5 tracking-[0.15em] uppercase">
-                      {p.countryOfOrigin}
-                    </div>
-                  )}
-                  
-                  {/* Subtle gradient overlay on hover */}
-                  <div className="absolute inset-0 bg-brand-charcoal/0 group-hover:bg-brand-charcoal/10 transition-colors duration-500"></div>
-                </div>
-                
-                <div className="p-8 flex flex-col flex-grow">
-                  <div className="flex justify-between items-start mb-4">
-                    <h3 className="text-xl font-serif text-brand-charcoal">{p.name}</h3>
-                    <p className="text-brand-charcoal font-medium text-lg tracking-wide">{formatIDR(p.price)}</p>
-                  </div>
-                  
-                  <div className="flex items-center gap-4 text-[10px] font-mono text-stone-500 uppercase tracking-widest mb-8">
-                    <span className="border border-stone-200 px-2 py-1">{p.fit}</span>
-                    <span>Stok: <span className="text-brand-charcoal font-semibold">{p.stock}</span></span>
-                  </div>
-                  
-                  <div className="mt-auto grid grid-cols-2 gap-3 opacity-90 group-hover:opacity-100 transition-opacity">
-                    <a 
-                      href={`https://wa.me/${waAdmin}?text=Halo%20Admin%20NAKADUO,%20saya%20tertarik%20dengan%20produk%20${encodeURIComponent(p.name)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="col-span-2 bg-brand-charcoal text-white text-center py-4 text-[10px] tracking-[0.15em] font-medium uppercase hover:bg-black transition-colors border border-brand-charcoal"
-                    >
-                      Beli via WhatsApp
-                    </a>
-                    {p.marketplaceLink && (
-                       <a 
-                         href={p.marketplaceLink}
-                         target="_blank"
-                         rel="noopener noreferrer"
-                         className="col-span-2 bg-transparent text-brand-charcoal text-center py-3 text-[10px] tracking-[0.15em] font-medium uppercase hover:bg-stone-50 transition-colors border border-stone-200"
-                       >
-                         Lihat di Marketplace
-                       </a>
-                    )}
-                  </div>
-                </div>
-              </motion.div>
+              <ProductCard key={p.id} p={p} idx={idx} waAdmin={waAdmin} formatIDR={formatIDR} />
             ))}
           </div>
         )}

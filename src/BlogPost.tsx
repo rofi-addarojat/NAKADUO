@@ -6,6 +6,7 @@ import { ArrowLeft } from 'lucide-react';
 import { motion } from 'motion/react';
 import Markdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
+import { Helmet } from 'react-helmet-async';
 
 export default function BlogPost() {
   const { slug } = useParams<{ slug: string }>();
@@ -42,6 +43,13 @@ export default function BlogPost() {
 
   return (
     <article className="min-h-screen bg-brand-canvas text-brand-charcoal pt-24 pb-32">
+      <Helmet>
+        <title>{article.title} | NAKADUO Journal</title>
+        <meta name="description" content={article.excerpt} />
+        <meta property="og:title" content={`${article.title} | NAKADUO Journal`} />
+        <meta property="og:description" content={article.excerpt} />
+        {article.imageUrl && <meta property="og:image" content={article.imageUrl} />}
+      </Helmet>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-12">
           <Link to="/blog" className="inline-flex items-center text-sm font-mono tracking-widest uppercase hover:text-brand-bronze transition-colors">
