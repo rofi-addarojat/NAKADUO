@@ -8,10 +8,28 @@ export default function Admin() {
   const [loading, setLoading] = useState(true);
 
   // Content State
-  const [content, setContent] = useState({
+  const [content, setContent] = useState<any>({
     headline: "Esensi Ketegasan dalam Gaya Autentik.",
     description: "Dikurasi khusus untuk pria yang memahami bahwa kualitas tidak bisa dikompromikan. Koleksi denim impor dan streetwear dengan material premium yang membentuk karakter Anda.",
     tagline: "Gaya Autentik.",
+    heroImage1: "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?q=80&w=1974&auto=format&fit=crop",
+    heroImage2: "https://images.unsplash.com/photo-1576995853123-5a10305d93c0?q=80&w=2070&auto=format&fit=crop",
+    whyHeadline: "Kualitas",
+    whySubheadline: "Tanpa Kompromi",
+    whyDescription: "Seluruh koleksi kami melalui proses kurasi ketat, memastikan setiap elemen dari material hingga jahitan merepresentasikan standar pergerakan gaya hidup modern.",
+    careHeadline: "Seni",
+    careSubheadline: "Preservasi",
+    careDescription: "Karakter sesungguhnya lahir dari perjalanan, bukan etalase. Pahami protokol perawatan esensial untuk merawat mahakarya denim Anda agar fudar menua dengan estetika maksimal.",
+    galleryHeadline: "Arsip",
+    gallerySubheadline: "Representasi",
+    galleryDescription: "Rekam jejak mereka yang memahami nilai dari material superior. Lebih dari sekadar pakaian, ini tentang pernyataan karakter absolut.",
+    faqHeadline: "Informasi",
+    faqSubheadline: "Eksklusif",
+    testimonialHeadline: "Pengalaman",
+    testimonialSubheadline: "Kustomer",
+    footerHeadline: "Pilih yang Terbaik, Rasakan Perbedaannya!",
+    footerDesc: "Butik denim impor & premium streetwear pilihan untuk standar pria modern.",
+    footerAddress: "Jombang, Blok C2 No. 8",
     metaKeywords: "denim impor, raw denim, selvedge denim, streetwear pria, celana jeans premium, jaket denim, fashion pria modern, NAKADUO",
     metaAuthor: "NAKADUO"
   });
@@ -63,9 +81,51 @@ export default function Admin() {
       
       const articlesSnap = await getDocs(collection(db, 'articles'));
       setArticles(articlesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+
+      const { getDoc } = await import('firebase/firestore');
+      const contentSnap = await getDoc(doc(db, 'siteContent', 'landingPage'));
+      if (contentSnap.exists()) {
+        setContent((prev: any) => ({ ...prev, ...contentSnap.data() }));
+      }
+      
+      const settingsSnap = await getDoc(doc(db, 'settings', 'general'));
+      if (settingsSnap.exists()) {
+        setSettings((prev: any) => ({ ...prev, ...settingsSnap.data() }));
+      }
     } catch (e) {
       console.error(e);
     }
+  };
+
+  const handleImageProcess = (e: React.ChangeEvent<HTMLInputElement>, callback: (dataUrl: string) => void) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 1200;
+        const MAX_HEIGHT = 1200;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) { height = Math.round((height *= MAX_WIDTH / width)); width = MAX_WIDTH; }
+        } else {
+          if (height > MAX_HEIGHT) { width = Math.round((width *= MAX_HEIGHT / height)); height = MAX_HEIGHT; }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          callback(canvas.toDataURL('image/jpeg', 0.8));
+        }
+      };
+      img.src = event.target?.result as string;
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSaveContent = async () => {
@@ -243,7 +303,7 @@ export default function Admin() {
           <h2 className="text-xl font-medium mb-4">Ubah Konten Landing Page</h2>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm text-stone-600 mb-1">Headline</label>
+              <label className="block text-sm text-stone-600 mb-1">Headline Hero</label>
               <input value={content.headline} onChange={e => setContent({...content, headline: e.target.value})} className="w-full border p-2" />
             </div>
             <div>
@@ -251,10 +311,81 @@ export default function Admin() {
               <input value={content.tagline} onChange={e => setContent({...content, tagline: e.target.value})} className="w-full border p-2" />
             </div>
             <div>
-              <label className="block text-sm text-stone-600 mb-1">Deskripsi Utama (Meta Description)</label>
+              <label className="block text-sm text-stone-600 mb-1">Deskripsi Hero & Meta Description</label>
               <textarea value={content.description} onChange={e => setContent({...content, description: e.target.value})} className="w-full border p-2 h-24" />
             </div>
-            <div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm text-stone-600 mb-1">Hero Image 1 (URL)</label>
+                <input value={content.heroImage1 || ''} onChange={e => setContent({...content, heroImage1: e.target.value})} className="w-full border p-2" />
+                <label className="block text-xs mt-1">Atau Upload:</label>
+                <input type="file" accept="image/*" onChange={e => handleImageProcess(e, url => setContent({...content, heroImage1: url}))} className="w-full text-sm" />
+              </div>
+              <div>
+                <label className="block text-sm text-stone-600 mb-1">Hero Image 2 (URL)</label>
+                <input value={content.heroImage2 || ''} onChange={e => setContent({...content, heroImage2: e.target.value})} className="w-full border p-2" />
+                <label className="block text-xs mt-1">Atau Upload:</label>
+                <input type="file" accept="image/*" onChange={e => handleImageProcess(e, url => setContent({...content, heroImage2: url}))} className="w-full text-sm" />
+              </div>
+            </div>
+            
+            <div className="pt-4 border-t">
+              <h3 className="font-medium mb-2">Section: Why Choose Us</h3>
+              <div className="grid grid-cols-2 gap-4 mb-2">
+                <input placeholder="Headline" value={content.whyHeadline || ''} onChange={e => setContent({...content, whyHeadline: e.target.value})} className="w-full border p-2" />
+                <input placeholder="Subheadline" value={content.whySubheadline || ''} onChange={e => setContent({...content, whySubheadline: e.target.value})} className="w-full border p-2" />
+              </div>
+              <textarea placeholder="Deskripsi Why Choose Us" value={content.whyDescription || ''} onChange={e => setContent({...content, whyDescription: e.target.value})} className="w-full border p-2 h-20" />
+            </div>
+
+            <div className="pt-4 border-t">
+              <h3 className="font-medium mb-2">Section: Care Guide</h3>
+              <div className="grid grid-cols-2 gap-4 mb-2">
+                <input placeholder="Headline" value={content.careHeadline || ''} onChange={e => setContent({...content, careHeadline: e.target.value})} className="w-full border p-2" />
+                <input placeholder="Subheadline" value={content.careSubheadline || ''} onChange={e => setContent({...content, careSubheadline: e.target.value})} className="w-full border p-2" />
+              </div>
+              <textarea placeholder="Deskripsi Care Guide" value={content.careDescription || ''} onChange={e => setContent({...content, careDescription: e.target.value})} className="w-full border p-2 h-20" />
+              <div>
+                <label className="block text-sm text-stone-600 mb-1">Care Image (URL)</label>
+                <input value={content.careImage || ''} onChange={e => setContent({...content, careImage: e.target.value})} className="w-full border p-2" />
+                <label className="block text-xs mt-1">Atau Upload:</label>
+                <input type="file" accept="image/*" onChange={e => handleImageProcess(e, url => setContent({...content, careImage: url}))} className="w-full text-sm" />
+              </div>
+            </div>
+
+            <div className="pt-4 border-t">
+              <h3 className="font-medium mb-2">Section: Testimonial</h3>
+              <div className="grid grid-cols-2 gap-4 mb-2">
+                <input placeholder="Headline" value={content.testimonialHeadline || ''} onChange={e => setContent({...content, testimonialHeadline: e.target.value})} className="w-full border p-2" />
+                <input placeholder="Subheadline" value={content.testimonialSubheadline || ''} onChange={e => setContent({...content, testimonialSubheadline: e.target.value})} className="w-full border p-2" />
+              </div>
+            </div>
+
+            <div className="pt-4 border-t">
+              <h3 className="font-medium mb-2">Section: Gallery</h3>
+              <div className="grid grid-cols-2 gap-4 mb-2">
+                <input placeholder="Headline" value={content.galleryHeadline || ''} onChange={e => setContent({...content, galleryHeadline: e.target.value})} className="w-full border p-2" />
+                <input placeholder="Subheadline" value={content.gallerySubheadline || ''} onChange={e => setContent({...content, gallerySubheadline: e.target.value})} className="w-full border p-2" />
+              </div>
+              <textarea placeholder="Deskripsi Gallery" value={content.galleryDescription || ''} onChange={e => setContent({...content, galleryDescription: e.target.value})} className="w-full border p-2 h-20" />
+            </div>
+
+            <div className="pt-4 border-t">
+              <h3 className="font-medium mb-2">Section: FAQ</h3>
+              <div className="grid grid-cols-2 gap-4 mb-2">
+                <input placeholder="Headline" value={content.faqHeadline || ''} onChange={e => setContent({...content, faqHeadline: e.target.value})} className="w-full border p-2" />
+                <input placeholder="Subheadline (Kata Akhir)" value={content.faqSubheadline || ''} onChange={e => setContent({...content, faqSubheadline: e.target.value})} className="w-full border p-2" />
+              </div>
+            </div>
+
+            <div className="pt-4 border-t">
+              <h3 className="font-medium mb-2">Section: Footer</h3>
+              <input placeholder="Footer Headline" value={content.footerHeadline || ''} onChange={e => setContent({...content, footerHeadline: e.target.value})} className="w-full border p-2 mb-2" />
+              <textarea placeholder="Footer Description" value={content.footerDesc || ''} onChange={e => setContent({...content, footerDesc: e.target.value})} className="w-full border p-2 h-20 mb-2" />
+              <input placeholder="Footer Address" value={content.footerAddress || ''} onChange={e => setContent({...content, footerAddress: e.target.value})} className="w-full border p-2" />
+            </div>
+
+            <div className="pt-4 border-t">
               <label className="block text-sm text-stone-600 mb-1">Meta Keywords (pisahkan dengan koma)</label>
               <input value={content.metaKeywords} onChange={e => setContent({...content, metaKeywords: e.target.value})} className="w-full border p-2" />
             </div>
@@ -292,7 +423,11 @@ export default function Admin() {
           <div className="grid grid-cols-2 gap-4">
             <input placeholder="Nama Produk" className="border p-2" value={newProduct.name} onChange={e => setNewProduct({...newProduct, name: e.target.value})} />
             <input placeholder="Harga (Angka)" type="number" className="border p-2" value={newProduct.price} onChange={e => setNewProduct({...newProduct, price: Number(e.target.value)})} />
-            <input placeholder="Image URL" className="border p-2 col-span-2" value={newProduct.imageUrl} onChange={e => setNewProduct({...newProduct, imageUrl: e.target.value})} />
+            <div className="col-span-2 border p-2">
+              <label className="block text-sm text-stone-600 mb-1">Image (URL atau Upload)</label>
+              <input placeholder="Image URL" className="w-full border p-2 mb-2" value={newProduct.imageUrl} onChange={e => setNewProduct({...newProduct, imageUrl: e.target.value})} />
+              <input type="file" accept="image/*" onChange={e => handleImageProcess(e, url => setNewProduct({...newProduct, imageUrl: url}))} className="w-full text-sm" />
+            </div>
             <input placeholder="Fit (Slim, Reguler)" className="border p-2" value={newProduct.fit} onChange={e => setNewProduct({...newProduct, fit: e.target.value})} />
             <input placeholder="Negara Asal" className="border p-2" value={newProduct.countryOfOrigin} onChange={e => setNewProduct({...newProduct, countryOfOrigin: e.target.value})} />
             <input placeholder="Stok" type="number" className="border p-2" value={newProduct.stock} onChange={e => setNewProduct({...newProduct, stock: Number(e.target.value)})} />
@@ -315,14 +450,18 @@ export default function Admin() {
         <div className="bg-white p-6 shadow-sm">
           <div className="flex justify-between items-center mb-4">
              <h2 className="text-xl font-medium">Manajemen Artikel</h2>
-             <button onClick={seedArticles} className="text-xs bg-stone-200 text-stone-700 px-3 py-1 rounded">Seed 6 Sample Articles</button>
+             <button onClick={seedArticles} className="text-xs bg-brand-charcoal text-white px-4 py-2 font-bold ring-2 ring-offset-1 ring-brand-bronze animate-pulse uppercase tracking-widest cursor-pointer">Inject 6 Sample Articles</button>
           </div>
           <div className="grid grid-cols-1 gap-4">
             <input placeholder="Judul Artikel" className="border p-2" value={newArticle.title} onChange={e => setNewArticle({...newArticle, title: e.target.value})} />
             <input placeholder="Slug (contoh: panduan-memilih-denim)" className="border p-2" value={newArticle.slug} onChange={e => setNewArticle({...newArticle, slug: e.target.value})} />
             <textarea placeholder="Excerpt (Ringkasan Singkat)" className="border p-2 h-16" value={newArticle.excerpt} onChange={e => setNewArticle({...newArticle, excerpt: e.target.value})} />
-            <textarea placeholder="Konten Artikel (Mendukung HTML)" className="border p-2 h-32" value={newArticle.content} onChange={e => setNewArticle({...newArticle, content: e.target.value})} />
-            <input placeholder="Image URL" className="border p-2" value={newArticle.imageUrl} onChange={e => setNewArticle({...newArticle, imageUrl: e.target.value})} />
+            <textarea placeholder="Konten Artikel (Mendukung Markdown/HTML)" className="border p-2 h-32" value={newArticle.content} onChange={e => setNewArticle({...newArticle, content: e.target.value})} />
+            <div className="border p-2">
+              <label className="block text-sm text-stone-600 mb-1">Image (URL atau Upload)</label>
+              <input placeholder="Image URL" className="w-full border p-2 mb-2" value={newArticle.imageUrl} onChange={e => setNewArticle({...newArticle, imageUrl: e.target.value})} />
+              <input type="file" accept="image/*" onChange={e => handleImageProcess(e, url => setNewArticle({...newArticle, imageUrl: url}))} className="w-full text-sm" />
+            </div>
           </div>
           <button onClick={handleSaveArticle} className="bg-brand-bronze text-white px-4 py-2 mt-4 hover:bg-yellow-700">
             {editingArticleId ? 'Update Artikel' : 'Tambah Artikel'}

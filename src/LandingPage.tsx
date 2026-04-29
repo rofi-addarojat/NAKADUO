@@ -9,10 +9,28 @@ import { Helmet } from 'react-helmet-async';
 
 export default function LandingPage() {
   const [products, setProducts] = useState<any[]>([]);
-  const [content, setContent] = useState({
+  const [content, setContent] = useState<any>({
     headline: "Investasi Gaya dalam Setiap Langkahmu.",
     description: "Koleksi celana denim dan streetwear impor pilihan dengan kualitas material premium untuk tampilan keren dan percaya diri setiap hari.",
     tagline: "Setiap Langkahmu.",
+    heroImage1: "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?q=80&w=1974&auto=format&fit=crop",
+    heroImage2: "https://images.unsplash.com/photo-1576995853123-5a10305d93c0?q=80&w=2070&auto=format&fit=crop",
+    whyHeadline: "Kualitas",
+    whySubheadline: "Tanpa Kompromi",
+    whyDescription: "Seluruh koleksi kami melalui proses kurasi ketat, memastikan setiap elemen dari material hingga jahitan merepresentasikan standar pergerakan gaya hidup modern.",
+    careHeadline: "Seni",
+    careSubheadline: "Preservasi",
+    careDescription: "Karakter sesungguhnya lahir dari perjalanan, bukan etalase. Pahami protokol perawatan esensial untuk merawat mahakarya denim Anda agar fudar menua dengan estetika maksimal.",
+    galleryHeadline: "Arsip",
+    gallerySubheadline: "Representasi",
+    galleryDescription: "Rekam jejak mereka yang memahami nilai dari material superior. Lebih dari sekadar pakaian, ini tentang pernyataan karakter absolut.",
+    faqHeadline: "Informasi",
+    faqSubheadline: "Eksklusif",
+    testimonialHeadline: "Pengalaman",
+    testimonialSubheadline: "Kustomer",
+    footerHeadline: "Pilih yang Terbaik, Rasakan Perbedaannya!",
+    footerDesc: "Butik denim impor & premium streetwear pilihan untuk standar pria modern.",
+    footerAddress: "Jombang, Blok C2 No. 8",
   });
   const [settings, setSettings] = useState({
     faviconUrl: "",
@@ -41,11 +59,10 @@ export default function LandingPage() {
                 tagline: "Gaya Autentik.",
                 updatedAt: new Date().toISOString()
              };
-             // Optional: Don't strictly await the setDoc to not block render, but it should be fast
              setDoc(doc(db, 'siteContent', 'landingPage'), newContent, { merge: true }).catch(console.error);
-             setContent(newContent);
+             setContent((prev: any) => ({ ...prev, ...newContent }));
           } else {
-             setContent(data);
+             setContent((prev: any) => ({ ...prev, ...data }));
           }
         }
       } catch (err) {
@@ -78,13 +95,14 @@ export default function LandingPage() {
       <Navbar />
       <main>
         <Hero content={content} />
-        <WhySection />
+        <WhySection content={content} />
         <CollectionSection products={products} waAdmin={settings.waAdmin} />
-        <CareGuideSection />
-        <GallerySection />
-        <FAQSection />
+        <CareGuideSection content={content} />
+        <TestimonialSection content={content} />
+        <GallerySection content={content} />
+        <FAQSection content={content} />
       </main>
-      <Footer waAdmin={settings.waAdmin} />
+      <Footer content={content} waAdmin={settings.waAdmin} />
     </div>
   );
 }
@@ -195,7 +213,7 @@ function Hero({ content }: { content: any }) {
           >
             <motion.img 
               style={{ y: mainImageParallax }}
-              src="https://images.unsplash.com/photo-1541099649105-f69ad21f3246?q=80&w=1974&auto=format&fit=crop" 
+              src={content.heroImage1 || "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?q=80&w=1974&auto=format&fit=crop"} 
               alt="Premium denim"
               initial={{ scale: 1.15 }}
               animate={{ scale: 1.1 }}
@@ -214,7 +232,7 @@ function Hero({ content }: { content: any }) {
             style={{ y: floatY }}
           >
             <img 
-              src="https://images.unsplash.com/photo-1576995853123-5a10305d93c0?q=80&w=2070&auto=format&fit=crop" 
+              src={content.heroImage2 || "https://images.unsplash.com/photo-1576995853123-5a10305d93c0?q=80&w=2070&auto=format&fit=crop"} 
               alt="Denim texture details"
               className="w-full h-full object-cover object-center filter grayscale contrast-125 hover:grayscale-0 transition-all duration-700"
             />
@@ -236,7 +254,7 @@ function Hero({ content }: { content: any }) {
   );
 }
 
-function WhySection() {
+function WhySection({ content }: { content: any }) {
   const points = [
     { icon: ShieldCheck, title: "Material Autentik", desc: "Denim impor kelas berat dan material dengan durabilitas tinggi yang teruji untuk pemakaian ekstrem." },
     { icon: Scissors, title: "Konstruksi Presisi", desc: "Kekuatan jahitan rantai dan perkuatan struktur untuk keawetan mutlak tanpa kompromi." },
@@ -253,10 +271,10 @@ function WhySection() {
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-8">
           <div className="max-w-2xl">
             <span className="text-brand-bronze font-mono uppercase tracking-[0.2em] text-xs mb-4 block">Standar Tanpa Kompromi</span>
-            <h2 className="text-5xl lg:text-7xl font-serif text-brand-canvas leading-none">Kualitas <br/><span className="italic text-stone-400">Tanpa Kompromi</span></h2>
+            <h2 className="text-5xl lg:text-7xl font-serif text-brand-canvas leading-none">{content.whyHeadline || "Kualitas"} <br/><span className="italic text-stone-400">{content.whySubheadline || "Tanpa Kompromi"}</span></h2>
           </div>
           <p className="text-stone-400 font-light max-w-sm text-sm leading-relaxed md:text-right">
-            Seluruh koleksi kami melalui proses kurasi ketat, memastikan setiap elemen dari material hingga jahitan merepresentasikan standar pergerakan gaya hidup modern.
+            {content.whyDescription || "Seluruh koleksi kami melalui proses kurasi ketat, memastikan setiap elemen dari material hingga jahitan merepresentasikan standar pergerakan gaya hidup modern."}
           </p>
         </div>
 
@@ -408,7 +426,7 @@ function CollectionSection({ products, waAdmin }: { products: any[], waAdmin: st
   );
 }
 
-function CareGuideSection() {
+function CareGuideSection({ content }: { content: any }) {
   return (
     <section id="care" className="py-32 bg-brand-canvas text-brand-charcoal relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -416,12 +434,12 @@ function CareGuideSection() {
           <div className="flex-1">
              <div className="mb-16">
                 <span className="text-brand-bronze font-mono uppercase tracking-[0.2em] text-[10px] mb-4 block">Manifesto Durabilitas</span>
-                <h2 className="text-5xl lg:text-7xl font-serif text-brand-charcoal mb-6 leading-none">Seni <br/><span className="italic font-light text-stone-400">Preservasi</span></h2>
-                <p className="text-stone-500 text-lg font-light leading-relaxed max-w-md">Karakter sesungguhnya lahir dari perjalanan, bukan etalase. Pahami protokol perawatan esensial untuk merawat mahakarya denim Anda agar fudar menua dengan estetika maksimal.</p>
+                <h2 className="text-5xl lg:text-7xl font-serif text-brand-charcoal mb-6 leading-none">{content.careHeadline || "Seni"} <br/><span className="italic font-light text-stone-400">{content.careSubheadline || "Preservasi"}</span></h2>
+                <p className="text-stone-500 text-lg font-light leading-relaxed max-w-md">{content.careDescription || "Karakter sesungguhnya lahir dari perjalanan, bukan etalase. Pahami protokol perawatan esensial untuk merawat mahakarya denim Anda agar fudar menua dengan estetika maksimal."}</p>
              </div>
              
              <div className="aspect-square bg-stone-200 overflow-hidden shrink-0 hidden lg:block">
-               <img src="https://images.unsplash.com/photo-1541099649105-f69ad21f3246?q=80&w=1974&auto=format&fit=crop" className="w-full h-full object-cover filter grayscale opacity-80 mix-blend-multiply" alt="Care Guide" />
+               <img src={content.careImage || "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?q=80&w=1974&auto=format&fit=crop"} className="w-full h-full object-cover filter grayscale opacity-80 mix-blend-multiply" alt="Care Guide" />
              </div>
           </div>
 
@@ -448,14 +466,78 @@ function CareGuideSection() {
   );
 }
 
-function GallerySection() {
+function TestimonialSection({ content }: { content: any }) {
+  const testimonials = [
+    {
+      id: 1,
+      name: "Rizky Firmansyah",
+      role: "Denim Enthusiast",
+      text: "Kualitas raw denim impor dari NAKADUO benar-benar luar biasa. Fading yang dihasilkan setelah 6 bulan pemakaian sangat berkarakter. Sangat sebanding dengan harganya.",
+      rating: 5,
+    },
+    {
+      id: 2,
+      name: "Daniel Adrian",
+      role: "Arsitek",
+      text: "Selvedge denim yang saya beli memiliki konstruksi yang sangat presisi. Sangat pas untuk aktivitas harian saya. Desain streetwear mereka juga punya estetika yang memukau tanpa terkesan berlebihan.",
+      rating: 5,
+    },
+    {
+      id: 3,
+      name: "Ahmad Fauzi",
+      role: "Creative Director",
+      text: "Sangat puas dengan potongan slim fit dari koleksi terbarunya. Detail jahitannya rapi dan materialnya terasa sangat premium. Celana paling nyaman yang pernah saya pakai.",
+      rating: 5,
+    }
+  ];
+
+  return (
+    <section id="testimonials" className="py-24 bg-stone-100 overflow-hidden relative border-y border-stone-200">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="text-center mb-16">
+          <span className="text-brand-charcoal font-mono uppercase tracking-[0.2em] text-[10px] mb-4 block">Reputasi & Kepercayaan</span>
+          <h2 className="text-4xl lg:text-5xl font-serif text-brand-charcoal mb-4">{content.testimonialHeadline || "Pengalaman"}<span className="italic font-light"> {content.testimonialSubheadline || "Kustomer"}</span></h2>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+          {testimonials.map((t, idx) => (
+            <motion.div 
+              key={t.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: idx * 0.2, duration: 0.8 }}
+              className="bg-white p-8 lg:p-10 border border-stone-200 hover:border-brand-charcoal/30 transition-colors shadow-sm relative group flex flex-col h-full"
+            >
+              <div className="flex gap-1 mb-6">
+                {[...Array(t.rating)].map((_, i) => <span key={i} className="text-brand-charcoal text-xs">★</span>)}
+              </div>
+              <p className="font-sans font-light text-stone-600 leading-relaxed mb-8 text-sm lg:text-base flex-grow">"{t.text}"</p>
+              <div className="mt-auto">
+                <p className="font-serif text-brand-charcoal text-lg">{t.name}</p>
+                <p className="text-stone-400 font-mono text-[10px] uppercase tracking-widest mt-1">{t.role}</p>
+              </div>
+              <div className="absolute top-0 right-0 w-12 h-12 lg:w-16 lg:h-16 bg-stone-50 border-l border-b border-stone-100 -mr-px -mt-px group-hover:bg-brand-charcoal transition-colors duration-500 hidden sm:block">
+                <svg className="w-5 h-5 lg:w-6 lg:h-6 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-stone-300 group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
+                </svg>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function GallerySection({ content }: { content: any }) {
   return (
     <section id="gallery" className="py-32 bg-brand-charcoal text-brand-canvas">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-20">
           <span className="text-brand-bronze font-mono uppercase tracking-[0.2em] text-[10px] mb-4 block">Kurasi Dokumenter</span>
-          <h2 className="text-5xl lg:text-6xl font-serif text-brand-canvas mb-4 tracking-tight">Arsip <span className="italic font-light">Representasi</span></h2>
-          <p className="text-stone-400 font-light max-w-lg mx-auto">Rekam jejak mereka yang memahami nilai dari material superior. Lebih dari sekadar pakaian, ini tentang pernyataan karakter absolut.</p>
+          <h2 className="text-5xl lg:text-6xl font-serif text-brand-canvas mb-4 tracking-tight">{content.galleryHeadline || "Arsip"} <span className="italic font-light">{content.gallerySubheadline || "Representasi"}</span></h2>
+          <p className="text-stone-400 font-light max-w-lg mx-auto">{content.galleryDescription || "Rekam jejak mereka yang memahami nilai dari material superior. Lebih dari sekadar pakaian, ini tentang pernyataan karakter absolut."}</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-[1px] auto-rows-[300px] bg-brand-charcoal border border-brand-canvas/10">
@@ -492,7 +574,7 @@ function GallerySection() {
   );
 }
 
-function FAQSection() {
+function FAQSection({ content }: { content: any }) {
   const faqs = [
     { q: "Bagaimana cara menentukan kesesuaian fitting secara absolut?", a: "Setiap spesifikasi garmen kami dilengkapi topografi dimensi yang detail. Kami merekomendasikan kalibrasi menyilang dengan mengukur perimeter garmen andalan Anda, demi memastikan tingkat fiksasi yang paripurna." },
     { q: "Apakah logistik pengiriman menjangkau area operasional terluar?", a: "Tentu. Kami mengutilisasi infrastruktur logistik tier-1 nasional dengan sistem pelacakan mutakhir, menjamin akuisisi produk dengan kompromi cacat nol ke semua titik demografis Indonesia." },
@@ -506,7 +588,7 @@ function FAQSection() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <span className="text-brand-bronze font-mono uppercase tracking-[0.2em] text-[10px] mb-4 block">Inkuiri Esensial</span>
-          <h2 className="text-4xl font-serif text-brand-charcoal">Informasi Eksklusif</h2>
+          <h2 className="text-4xl font-serif text-brand-charcoal">{content.faqHeadline || "Informasi"} <span className="italic font-light">{content.faqSubheadline || "Eksklusif"}</span></h2>
         </div>
         
         <div className="space-y-0 border-y border-brand-charcoal/10">
@@ -536,19 +618,20 @@ function FAQSection() {
   );
 }
 
-function Footer({ waAdmin }: { waAdmin: string }) {
+function Footer({ content, waAdmin }: { content: any, waAdmin: string }) {
   return (
     <footer className="bg-brand-charcoal text-brand-canvas py-20 border-t border-brand-charcoal/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row justify-between items-start gap-12 mb-16">
            <div className="max-w-xs">
-             <h2 className="font-serif text-3xl tracking-[0.2em] text-brand-canvas mb-6">NAKADUO<span className="text-brand-bronze font-sans">.</span></h2>
-             <p className="text-stone-400 text-sm font-light leading-relaxed">Pilih yang Terbaik, Rasakan Perbedaannya! Butik denim impor & premium streetwear pilihan untuk standar pria modern.</p>
+             <h2 className="font-serif text-3xl tracking-[0.2em] text-brand-canvas mb-4">NAKADUO<span className="text-brand-bronze font-sans">.</span></h2>
+             <p className="text-brand-bronze text-sm italic font-serif mb-2">{content.footerHeadline || "Pilih yang Terbaik, Rasakan Perbedaannya!"}</p>
+             <p className="text-stone-400 text-sm font-light leading-relaxed">{content.footerDesc || "Butik denim impor & premium streetwear pilihan untuk standar pria modern."}</p>
            </div>
            <div className="flex flex-col md:text-right space-y-8">
              <div>
                <h3 className="text-white font-mono text-[10px] tracking-[0.15em] uppercase mb-3">Workshop & Store</h3>
-               <p className="text-stone-400 font-light text-sm">Jombang, Blok C2 No. 8</p>
+               <p className="text-stone-400 font-light text-sm">{content.footerAddress || "Jombang, Blok C2 No. 8"}</p>
              </div>
              <div>
                 <h3 className="text-white font-mono text-[10px] tracking-[0.15em] uppercase mb-3">Client Services</h3>
