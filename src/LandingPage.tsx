@@ -140,7 +140,7 @@ function Hero({ content }: { content: any }) {
   const mainImageParallax = useTransform(scrollY, [0, 1000], [0, 120]);
   
   return (
-    <section id="home" className="relative min-h-[100svh] flex flex-col lg:flex-row items-center justify-center bg-brand-charcoal pt-24 lg:pt-0 overflow-hidden">
+    <section id="home" className="relative min-h-[100svh] flex flex-col lg:flex-row items-center justify-center bg-brand-charcoal pt-32 lg:pt-32 pb-20 overflow-hidden">
       
       {/* Background Decorative Elements */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
@@ -155,27 +155,27 @@ function Hero({ content }: { content: any }) {
           initial={{ opacity: 0, x: -30 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-          className="w-full lg:w-5/12 flex flex-col justify-center pt-8 lg:pt-0"
+          className="w-full lg:w-5/12 flex flex-col justify-center"
         >
-          <div className="flex items-center gap-4 mb-8">
+          <div className="flex items-center gap-4 mb-6">
             <span className="w-12 h-px bg-brand-bronze"></span>
             <span className="text-brand-bronze font-mono uppercase tracking-[0.25em] text-[10px] sm:text-xs font-semibold">Premium Imports</span>
           </div>
 
-          <h1 className="text-5xl sm:text-7xl lg:text-[5rem] xl:text-8xl font-serif text-white leading-[0.95] tracking-[-0.02em] mb-8">
+          <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-[5.5rem] font-serif text-white leading-[1.05] tracking-[-0.02em] mb-8">
             {headlineParts[0]}
             <br />
-            <span className="italic font-light text-stone-400 lg:pl-16 sm:pl-8 block mt-3">
+            <span className="italic font-light text-stone-400 lg:pl-12 sm:pl-8 block mt-2">
               {headlineParts.length > 1 ? `dalam ${headlineParts[1]}` : content.tagline}
             </span>
           </h1>
           
-          <p className="text-base sm:text-lg text-stone-400 max-w-md leading-relaxed font-light mb-12 border-l border-brand-bronze/30 pl-6 ml-2">
+          <p className="text-base sm:text-lg text-stone-400 max-w-md leading-relaxed font-light mb-10 border-l border-brand-bronze/30 pl-6 ml-2">
             {content.description}
           </p>
 
           <div className="flex flex-wrap items-center gap-8 ml-2">
-            <a href="#collection" className="inline-flex items-center justify-center gap-4 bg-white text-brand-charcoal px-8 py-5 text-[10px] sm:text-xs tracking-[0.2em] uppercase hover:bg-brand-bronze hover:text-white transition-all duration-500 group shadow-xl hover:-translate-y-1">
+            <a href="#collection" className="inline-flex items-center justify-center gap-4 bg-white text-brand-charcoal px-8 py-4 text-[10px] sm:text-xs tracking-[0.2em] uppercase hover:bg-brand-bronze hover:text-white transition-all duration-500 group shadow-xl hover:-translate-y-1">
               <span>Jelajahi Koleksi</span> 
               <ArrowRight className="h-4 w-4 group-hover:translate-x-2 transition-transform duration-300" />
             </a>
@@ -186,7 +186,7 @@ function Hero({ content }: { content: any }) {
         </motion.div>
 
         {/* Right Images (Editorial Collage) */}
-        <div className="w-full lg:w-7/12 relative h-[50vh] sm:h-[60vh] lg:h-[80vh] mt-10 lg:mt-0 flex-shrink-0">
+        <div className="w-full lg:w-7/12 relative h-[50vh] sm:h-[60vh] lg:h-[75vh] mt-10 lg:mt-0 flex-shrink-0">
           <motion.div 
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -195,14 +195,14 @@ function Hero({ content }: { content: any }) {
           >
             <motion.img 
               style={{ y: mainImageParallax }}
-              src="https://images.unsplash.com/photo-1542272454315-4c01d7abdf4a?q=80&w=2070&auto=format&fit=crop" 
+              src="https://images.unsplash.com/photo-1541099649105-f69ad21f3246?q=80&w=1974&auto=format&fit=crop" 
               alt="Premium denim"
               initial={{ scale: 1.15 }}
               animate={{ scale: 1.1 }}
               transition={{ duration: 2.5, ease: "easeOut" }}
-              className="w-full h-full object-cover object-center filter contrast-125 saturate-50 origin-top"
+              className="w-full h-full object-cover object-center filter contrast-110 saturate-50 origin-top"
             />
-            <div className="absolute inset-0 bg-gradient-to-tr from-brand-charcoal/20 via-transparent to-transparent"></div>
+            <div className="absolute inset-0 bg-gradient-to-tr from-brand-charcoal/40 via-transparent to-transparent pointer-events-none"></div>
           </motion.div>
 
           {/* Overlapping offset image */}
@@ -210,7 +210,7 @@ function Hero({ content }: { content: any }) {
             initial={{ opacity: 0, x: -30, y: 30 }}
             animate={{ opacity: 1, x: 0, y: 0 }}
             transition={{ duration: 1.5, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute bottom-[2%] sm:bottom-0 left-0 w-[55%] h-[50%] sm:h-[60%] bg-stone-100 overflow-hidden shadow-2xl border-4 sm:border-8 border-brand-canvas"
+            className="absolute bottom-[2%] sm:bottom-0 left-0 w-[55%] h-[50%] sm:h-[60%] bg-stone-100 overflow-hidden shadow-2xl border-4 sm:border-8 border-brand-charcoal"
             style={{ y: floatY }}
           >
             <img 
@@ -225,9 +225,9 @@ function Hero({ content }: { content: any }) {
             initial={{ opacity: 0, scale: 0.5, rotate: -20 }}
             animate={{ opacity: 1, scale: 1, rotate: 0 }}
             transition={{ duration: 1, delay: 1, type: "spring" }}
-            className="absolute top-[8%] sm:top-[15%] left-[-2%] sm:left-[5%] bg-brand-canvas rounded-full p-4 shadow-xl text-center aspect-square flex flex-col justify-center items-center h-20 w-20 sm:h-28 sm:w-28 z-20 border border-brand-charcoal/5"
+            className="absolute top-[8%] sm:top-[25%] left-[-2%] sm:left-[5%] bg-brand-charcoal rounded-full p-4 shadow-xl text-center aspect-square flex flex-col justify-center items-center h-24 w-24 sm:h-28 sm:w-28 z-20 border border-brand-bronze/30"
           >
-             <span className="text-[10px] sm:text-xs font-serif italic text-brand-charcoal leading-none mb-1">Authentic</span>
+             <span className="text-[10px] sm:text-xs font-serif italic text-white leading-none mb-1">Authentic</span>
              <span className="text-sm sm:text-base font-bold text-brand-bronze leading-none font-mono">DENIM</span>
           </motion.div>
         </div>
