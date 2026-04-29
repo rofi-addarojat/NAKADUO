@@ -65,7 +65,7 @@ export default function BlogPost() {
           className="text-center mb-16"
         >
           <div className="font-mono text-[10px] uppercase tracking-widest text-stone-400 mb-6">
-            {new Date(article.createdAt).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}
+            {(article.createdAt?.toDate ? article.createdAt.toDate() : new Date(article.createdAt || Date.now())).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}
           </div>
           <h1 className="text-4xl md:text-5xl lg:text-7xl font-serif text-brand-charcoal max-w-3xl mx-auto leading-tight mb-8">
             {article.title}

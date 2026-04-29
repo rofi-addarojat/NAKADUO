@@ -117,18 +117,9 @@ service cloud.firestore {
       allow get: if isValidId(docId) && true;
       allow list: if true;
       allow create: if isAdmin() && docId == 'landingPage'
-        && incoming().keys().hasAll(['headline', 'description', 'tagline', 'updatedAt'])
-        && incoming().keys().size() == 4
-        && incoming().headline is string && incoming().headline.size() <= 500
-        && incoming().description is string && incoming().description.size() <= 2000
-        && incoming().tagline is string && incoming().tagline.size() <= 500
         && incoming().updatedAt == request.time;
       allow update: if isAdmin() && docId == 'landingPage'
-        && incoming().headline is string && incoming().headline.size() <= 500
-        && incoming().description is string && incoming().description.size() <= 2000
-        && incoming().tagline is string && incoming().tagline.size() <= 500
-        && incoming().updatedAt == request.time
-        && incoming().diff(existing()).affectedKeys().hasOnly(['headline', 'description', 'tagline', 'updatedAt']);
+        && incoming().updatedAt == request.time;
       allow delete: if false; // Don't delete landing page
     }
     
@@ -137,18 +128,9 @@ service cloud.firestore {
        allow get: if isValidId(docId) && true;
        allow list: if true;
        allow create: if isAdmin() && docId == 'general'
-         && incoming().keys().hasAll(['faviconUrl', 'logoUrl', 'waAdmin', 'updatedAt'])
-         && incoming().keys().size() == 4
-         && incoming().faviconUrl is string && incoming().faviconUrl.size() <= 2000
-         && incoming().logoUrl is string && incoming().logoUrl.size() <= 2000
-         && incoming().waAdmin is string && incoming().waAdmin.size() <= 50
          && incoming().updatedAt == request.time;
        allow update: if isAdmin() && docId == 'general'
-         && incoming().faviconUrl is string && incoming().faviconUrl.size() <= 2000
-         && incoming().logoUrl is string && incoming().logoUrl.size() <= 2000
-         && incoming().waAdmin is string && incoming().waAdmin.size() <= 50
-         && incoming().updatedAt == request.time
-         && incoming().diff(existing()).affectedKeys().hasOnly(['faviconUrl', 'logoUrl', 'waAdmin', 'updatedAt']);
+         && incoming().updatedAt == request.time;
        allow delete: if false;
     }
   }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs, doc, setDoc, deleteDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, setDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db, handleFirestoreError, OperationType, loginWithGoogle, logout } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { LayoutDashboard, LogOut, Settings, Package, FileText, LayoutTemplate, Save, Plus, Trash2, Image as ImageIcon, Eye } from 'lucide-react';
@@ -173,7 +173,7 @@ export default function Admin() {
     try {
       await setDoc(doc(db, 'siteContent', 'landingPage'), {
         ...content,
-        updatedAt: new Date().toISOString()
+        updatedAt: serverTimestamp()
       }, { merge: true });
       notifySuccess('Konten Landing Page berhasil disimpan!');
     } catch (err) {
@@ -186,7 +186,7 @@ export default function Admin() {
     try {
       await setDoc(doc(db, 'settings', 'general'), {
         ...settings,
-        updatedAt: new Date().toISOString()
+        updatedAt: serverTimestamp()
       }, { merge: true });
       notifySuccess('Pengaturan Web berhasil disimpan!');
     } catch (err) {
@@ -197,18 +197,20 @@ export default function Admin() {
   const handleAddOrEditProduct = async () => {
     try {
       const pId = newProduct.id || crypto.randomUUID();
-      await setDoc(doc(db, 'products', pId), {
+      const productData: any = {
         name: newProduct.name,
         price: Number(newProduct.price),
         imageUrl: newProduct.imageUrl,
         countryOfOrigin: newProduct.countryOfOrigin,
         fit: newProduct.fit,
         stock: Number(newProduct.stock),
-        whatsAppLink: newProduct.whatsAppLink,
-        marketplaceLink: newProduct.marketplaceLink,
-        createdAt: newProduct.id ? undefined : new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      }, { merge: true });
+        updatedAt: serverTimestamp()
+      };
+      if (newProduct.whatsAppLink) productData.whatsAppLink = newProduct.whatsAppLink;
+      if (newProduct.marketplaceLink) productData.marketplaceLink = newProduct.marketplaceLink;
+      if (!newProduct.id) productData.createdAt = serverTimestamp();
+
+      await setDoc(doc(db, 'products', pId), productData, { merge: true });
       notifySuccess(newProduct.id ? 'Produk diperbarui!' : 'Produk ditambahkan!');
       setNewProduct({ id: "", name: "", price: 0, imageUrl: "", countryOfOrigin: "", fit: "", stock: 0, whatsAppLink: "", marketplaceLink: "" });
       loadData();
@@ -247,11 +249,13 @@ export default function Admin() {
     try {
       const aId = editingArticleId || crypto.randomUUID();
       const existingArticle = articles.find(a => a.id === aId);
-      await setDoc(doc(db, 'articles', aId), {
+      const articleData: any = {
         ...newArticle,
-        createdAt: existingArticle?.createdAt || new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      }, { merge: true });
+        updatedAt: serverTimestamp()
+      };
+      if (!existingArticle) articleData.createdAt = serverTimestamp();
+
+      await setDoc(doc(db, 'articles', aId), articleData, { merge: true });
       notifySuccess('Artikel berhasil disimpan!');
       setNewArticle({title:"", slug:"", content:"", excerpt:"", imageUrl:""});
       setEditingArticleId(null);
@@ -307,8 +311,8 @@ export default function Admin() {
         const aId = crypto.randomUUID();
         await setDoc(doc(db, 'articles', aId), {
           ...article,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
         });
       }));
       notifySuccess('Sample articles injected!');
@@ -549,7 +553,7 @@ export default function Admin() {
                <SectionBox title={newProduct.id ? "Edit Produk" : "Tambah Produk Baru"}>
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                    <InputRow label="Nama Produk" value={newProduct.name} onChange={v => setNewProduct({...newProduct, name: v})} />
-                   <InputRow label="Harga Satuan (Angka)" type="number" value={newProduct.price} onChange={v => setNewProduct({...newProduct, price: v})} />
+                   <InputRow label="Harga Satuan (Angka)" type="number" value={newProduct.price} onChange={v => setNewProduct({...newProduct, price: Number(v)})} />
                    
                    <div className="md:col-span-2">
                      <ImageInput label="Foto Produk Resolusi Tinggi (Potrait/4:5 direkomendasikan). Menggunakan Auto Crop & Resize." value={newProduct.imageUrl} onChange={v => setNewProduct({...newProduct, imageUrl: v})} uploadHandler={handleImageProcess} />
@@ -557,7 +561,7 @@ export default function Admin() {
                    
                    <InputRow label="Varian Fit (misal: Slim Fit, Relaxed)" value={newProduct.fit} onChange={v => setNewProduct({...newProduct, fit: v})} />
                    <InputRow label="Asal Negara (Opsional)" value={newProduct.countryOfOrigin} onChange={v => setNewProduct({...newProduct, countryOfOrigin: v})} />
-                   <InputRow label="Stok Tersedia" type="number" value={newProduct.stock} onChange={v => setNewProduct({...newProduct, stock: v})} />
+                   <InputRow label="Stok Tersedia" type="number" value={newProduct.stock} onChange={v => setNewProduct({...newProduct, stock: Number(v)})} />
                    <InputRow label="Link Tautan Marketplace (Opsional)" value={newProduct.marketplaceLink} onChange={v => setNewProduct({...newProduct, marketplaceLink: v})} />
                  </div>
                  <div className="mt-6 flex gap-3">

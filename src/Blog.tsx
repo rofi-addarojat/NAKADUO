@@ -71,7 +71,7 @@ export default function Blog() {
                   
                   <div className="flex-1 flex flex-col">
                     <div className="font-mono text-[10px] uppercase tracking-widest text-stone-400 mb-3">
-                      {new Date(article.createdAt).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}
+                      {(article.createdAt?.toDate ? article.createdAt.toDate() : new Date(article.createdAt || Date.now())).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}
                     </div>
                     <h2 className="text-2xl font-serif text-brand-charcoal mb-4 group-hover:text-brand-bronze transition-colors flex-1">{article.title}</h2>
                     <p className="text-stone-500 font-light leading-relaxed text-sm mb-6 line-clamp-3">{article.excerpt}</p>

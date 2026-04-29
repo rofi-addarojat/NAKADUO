@@ -2,7 +2,7 @@ import React from 'react';
 import { ArrowRight, Menu, X, ShieldCheck, Scissors, TrendingUp, Activity, Tag, Check, Ruler, RefreshCw, Truck } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform } from 'motion/react';
-import { collection, getDocs, doc, getDoc, setDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from './firebase';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
@@ -87,7 +87,7 @@ export default function LandingPage() {
                 headline: "Esensi Ketegasan dalam Gaya Autentik.",
                 description: "Dikurasi khusus untuk pria yang memahami bahwa kualitas tidak bisa dikompromikan. Koleksi denim impor dan streetwear dengan material premium yang membentuk karakter Anda.",
                 tagline: "Gaya Autentik.",
-                updatedAt: new Date().toISOString()
+                updatedAt: serverTimestamp()
              };
              setDoc(doc(db, 'siteContent', 'landingPage'), newContent, { merge: true }).catch(console.error);
              setContent((prev: any) => ({ ...prev, ...newContent }));
