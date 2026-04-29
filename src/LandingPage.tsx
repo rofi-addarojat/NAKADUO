@@ -18,16 +18,46 @@ export default function LandingPage() {
     whyHeadline: "Kualitas",
     whySubheadline: "Tanpa Kompromi",
     whyDescription: "Seluruh koleksi kami melalui proses kurasi ketat, memastikan setiap elemen dari material hingga jahitan merepresentasikan standar pergerakan gaya hidup modern.",
+    whyPoints: [
+      { title: "Material Autentik", desc: "Denim impor kelas berat dan material dengan durabilitas tinggi yang teruji untuk pemakaian ekstrem." },
+      { title: "Konstruksi Presisi", desc: "Kekuatan jahitan rantai dan perkuatan struktur untuk keawetan mutlak tanpa kompromi." },
+      { title: "Siluet Modern", desc: "Potongan arsitektural yang dirancang khusus untuk menyempurnakan postur dengan gaya kontemporer." },
+      { title: "Kenyamanan Maksimal", desc: "Tenunan inovatif yang memberikan fleksibilitas pergerakan tanpa mengorbankan ketebalan fabrik." },
+      { title: "Nilai Tanpa Tanding", desc: "Standar craftsmanship luxury internasional, dengan aksesibilitas harga yang sepenuhnya rasional." }
+    ],
     careHeadline: "Seni",
     careSubheadline: "Preservasi",
     careDescription: "Karakter sesungguhnya lahir dari perjalanan, bukan etalase. Pahami protokol perawatan esensial untuk merawat mahakarya denim Anda agar fudar menua dengan estetika maksimal.",
+    careImage: "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?q=80&w=1974&auto=format&fit=crop",
+    carePoints: [
+      { num: "#01", title: "Ritual Air Dingin", desc: "Sebuah purifikasi. Gunakan air bersuhu rendah guna mempertahankan integritas benang ikat indigo, meminimalisasi penyusutan struktural, dan menstabilkan kontras warna." },
+      { num: "#02", title: "Pengeringan Natural", desc: "Hindari agresi mesin termal. Proses pengeringan harus dilakukan secara bertahap dalam konfigurasi terbalik (inside-out) pada sirkulasi udara terbuka, melindungi serat kapas murni dari kelelahan material." },
+      { num: "#03", title: "Restorasi Tekstur", desc: "Biarkan gravitasi bekerja. Jika intervensi mekanis dibutuhkan, aplikasikan penetrasi uap suhu rendah perlahan dari lapisan interior, memastikan tekstur mentah (raw texture) tidak tergantikan oleh kilap sintetis." }
+    ],
     galleryHeadline: "Arsip",
     gallerySubheadline: "Representasi",
     galleryDescription: "Rekam jejak mereka yang memahami nilai dari material superior. Lebih dari sekadar pakaian, ini tentang pernyataan karakter absolut.",
+    galleryImage1: "https://images.unsplash.com/photo-1576995853123-5a10305d93c0?q=80&w=2070&auto=format&fit=crop",
+    galleryImage2: "https://images.unsplash.com/photo-1584370848010-d7fe6bc767ec?q=80&w=1974&auto=format&fit=crop",
+    galleryImage3: "https://images.unsplash.com/photo-1604147706283-d7119b5b822c?q=80&w=1974&auto=format&fit=crop",
+    galleryTesti1Text: "\"Arsitektur potongan sangat presisi. Ketebalan material memberi bobot premium namun tetap memfasilitasi artikulasi gerak dinamis. Absolute masterpiece.\"",
+    galleryTesti1Author: "- Bima, Jakarta",
+    galleryTesti2Text: "\"Siluet konstruksinya di luar ekspektasi, merekonstruksi postur menjadi jauh lebih terstruktur dan tajam. Ini standar yang saya cari.\"",
+    galleryTesti2Author: "- Arya, Surabaya",
     faqHeadline: "Informasi",
     faqSubheadline: "Eksklusif",
+    faqs: [
+      { q: "Bagaimana cara menentukan kesesuaian fitting secara absolut?", a: "Setiap spesifikasi garmen kami dilengkapi topografi dimensi yang detail. Kami merekomendasikan kalibrasi menyilang dengan mengukur perimeter garmen andalan Anda, demi memastikan tingkat fiksasi yang paripurna." },
+      { q: "Apakah logistik pengiriman menjangkau area operasional terluar?", a: "Tentu. Kami mengutilisasi infrastruktur logistik tier-1 nasional dengan sistem pelacakan mutakhir, menjamin akuisisi produk dengan kompromi cacat nol ke semua titik demografis Indonesia." },
+      { q: "Bagaimana terminologi garansi dan kebijakan penukaran diatur?", a: "Kesesuaian adalah hak mutlak Anda. Kami memfasilitasi asimilasi penggantian siluet (size-exchange) dengan tenggat 48 jam paska konfirmasi akuisisi, mensyaratkan preservasi kondisi fabrik orisinal (unwashed, original tagging intact)." }
+    ],
     testimonialHeadline: "Pengalaman",
     testimonialSubheadline: "Kustomer",
+    testimonials: [
+      { name: "Rizky Firmansyah", role: "Denim Enthusiast", text: "Kualitas raw denim impor dari NAKADUO benar-benar luar biasa. Fading yang dihasilkan setelah 6 bulan pemakaian sangat berkarakter. Sangat sebanding dengan harganya.", rating: 5 },
+      { name: "Daniel Adrian", role: "Arsitek", text: "Selvedge denim yang saya beli memiliki konstruksi yang sangat presisi. Sangat pas untuk aktivitas harian saya. Desain streetwear mereka juga punya estetika yang memukau tanpa terkesan berlebihan.", rating: 5 },
+      { name: "Ahmad Fauzi", role: "Creative Director", text: "Sangat puas dengan potongan slim fit dari koleksi terbarunya. Detail jahitannya rapi dan materialnya terasa sangat premium. Celana paling nyaman yang pernah saya pakai.", rating: 5 }
+    ],
     footerHeadline: "Pilih yang Terbaik, Rasakan Perbedaannya!",
     footerDesc: "Butik denim impor & premium streetwear pilihan untuk standar pria modern.",
     footerAddress: "Jombang, Blok C2 No. 8",
@@ -72,7 +102,7 @@ export default function LandingPage() {
       try {
         const settingsSnap = await getDoc(doc(db, 'settings', 'general'));
         if (settingsSnap.exists()) {
-          setSettings(settingsSnap.data() as any);
+           setSettings(settingsSnap.data() as any);
         }
       } catch (err) {
         // ignore if not setup yet
@@ -255,15 +285,16 @@ function Hero({ content }: { content: any }) {
 }
 
 function WhySection({ content }: { content: any }) {
-  const points = [
-    { icon: ShieldCheck, title: "Material Autentik", desc: "Denim impor kelas berat dan material dengan durabilitas tinggi yang teruji untuk pemakaian ekstrem." },
-    { icon: Scissors, title: "Konstruksi Presisi", desc: "Kekuatan jahitan rantai dan perkuatan struktur untuk keawetan mutlak tanpa kompromi." },
-    { icon: TrendingUp, title: "Siluet Modern", desc: "Potongan arsitektural yang dirancang khusus untuk menyempurnakan postur dengan gaya kontemporer." },
-  ];
-  const points2 = [
-    { icon: Activity, title: "Kenyamanan Maksimal", desc: "Tenunan inovatif yang memberikan fleksibilitas pergerakan tanpa mengorbankan ketebalan fabrik." },
-    { icon: Tag, title: "Nilai Tanpa Tanding", desc: "Standar craftsmanship luxury internasional, dengan aksesibilitas harga yang sepenuhnya rasional." },
-  ]
+  const allIcons = [ShieldCheck, Scissors, TrendingUp, Activity, Tag, Check, Ruler, RefreshCw, Truck];
+  
+  const getPoints = () => {
+    if (!content.whyPoints || !Array.isArray(content.whyPoints)) return [];
+    return content.whyPoints;
+  };
+
+  const pts = getPoints();
+  const firstRow = pts.slice(0, 3);
+  const secondRow = pts.slice(3, 6);
 
   return (
     <section className="py-32 bg-brand-charcoal text-brand-canvas relative">
@@ -279,7 +310,9 @@ function WhySection({ content }: { content: any }) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-y-12 gap-x-8 mb-12">
-          {points.map((pt, idx) => (
+          {firstRow.map((pt: any, idx: number) => {
+            const Icon = allIcons[idx % allIcons.length];
+            return (
             <motion.div 
               key={idx}
               initial={{ opacity: 0, y: 20 }}
@@ -289,32 +322,36 @@ function WhySection({ content }: { content: any }) {
               className="flex flex-col border-t border-brand-canvas/10 pt-8"
             >
               <div className="flex items-center gap-4 mb-6">
-                <pt.icon className="h-6 w-6 text-brand-bronze" strokeWidth={1.5} />
+                <Icon className="h-6 w-6 text-brand-bronze" strokeWidth={1.5} />
                 <h3 className="text-lg font-serif tracking-wide">{pt.title}</h3>
               </div>
               <p className="text-sm text-stone-400 font-light leading-relaxed">{pt.desc}</p>
             </motion.div>
-          ))}
+          )})}
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-12 gap-x-8">
-           {points2.map((pt, idx) => (
-            <motion.div 
-              key={idx}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: idx * 0.1 }}
-              className="flex flex-col border-t border-brand-canvas/10 pt-8"
-            >
-              <div className="flex items-center gap-4 mb-6">
-                <pt.icon className="h-6 w-6 text-brand-bronze" strokeWidth={1.5} />
-                <h3 className="text-lg font-serif tracking-wide">{pt.title}</h3>
-              </div>
-              <p className="text-sm text-stone-400 font-light leading-relaxed">{pt.desc}</p>
-            </motion.div>
-          ))}
-        </div>
+        {secondRow.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-12 gap-x-8">
+             {secondRow.map((pt: any, idx: number) => {
+              const Icon = allIcons[(idx + 3) % allIcons.length];
+              return (
+              <motion.div 
+                key={idx}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.1 }}
+                className="flex flex-col border-t border-brand-canvas/10 pt-8"
+              >
+                <div className="flex items-center gap-4 mb-6">
+                  <Icon className="h-6 w-6 text-brand-bronze" strokeWidth={1.5} />
+                  <h3 className="text-lg font-serif tracking-wide">{pt.title}</h3>
+                </div>
+                <p className="text-sm text-stone-400 font-light leading-relaxed">{pt.desc}</p>
+              </motion.div>
+            )})}
+          </div>
+        )}
       </div>
     </section>
   );
@@ -427,6 +464,8 @@ function CollectionSection({ products, waAdmin }: { products: any[], waAdmin: st
 }
 
 function CareGuideSection({ content }: { content: any }) {
+  const points = content.carePoints && Array.isArray(content.carePoints) ? content.carePoints : [];
+  
   return (
     <section id="care" className="py-32 bg-brand-canvas text-brand-charcoal relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -438,27 +477,19 @@ function CareGuideSection({ content }: { content: any }) {
                 <p className="text-stone-500 text-lg font-light leading-relaxed max-w-md">{content.careDescription || "Karakter sesungguhnya lahir dari perjalanan, bukan etalase. Pahami protokol perawatan esensial untuk merawat mahakarya denim Anda agar fudar menua dengan estetika maksimal."}</p>
              </div>
              
-             <div className="aspect-square bg-stone-200 overflow-hidden shrink-0 hidden lg:block">
+             <div className="aspect-square bg-stone-200 overflow-hidden shrink-0 hidden lg:block border border-stone-100 shadow-xl">
                <img src={content.careImage || "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?q=80&w=1974&auto=format&fit=crop"} className="w-full h-full object-cover filter grayscale opacity-80 mix-blend-multiply" alt="Care Guide" />
              </div>
           </div>
 
           <div className="flex-1 flex flex-col justify-center space-y-12">
-            <div className="group border-l-2 border-transparent hover:border-brand-bronze pl-6 transition-colors duration-300">
-               <div className="text-brand-bronze text-sm font-mono tracking-widest mb-3">#01</div>
-               <h3 className="text-2xl font-serif mb-3 text-brand-charcoal group-hover:text-black transition-colors">Ritual Air Dingin</h3>
-               <p className="text-stone-500 text-sm font-light leading-relaxed max-w-md">Sebuah purifikasi. Gunakan air bersuhu rendah guna mempertahankan integritas benang ikat indigo, meminimalisasi penyusutan struktural, dan menstabilkan kontras warna.</p>
-            </div>
-            <div className="group border-l-2 border-transparent hover:border-brand-bronze pl-6 transition-colors duration-300">
-               <div className="text-brand-bronze text-sm font-mono tracking-widest mb-3">#02</div>
-               <h3 className="text-2xl font-serif mb-3 text-brand-charcoal group-hover:text-black transition-colors">Pengeringan Natural</h3>
-               <p className="text-stone-500 text-sm font-light leading-relaxed max-w-md">Hindari agresi mesin termal. Proses pengeringan harus dilakukan secara bertahap dalam konfigurasi terbalik (inside-out) pada sirkulasi udara terbuka, melindungi serat kapas murni dari kelelahan material.</p>
-            </div>
-            <div className="group border-l-2 border-transparent hover:border-brand-bronze pl-6 transition-colors duration-300">
-               <div className="text-brand-bronze text-sm font-mono tracking-widest mb-3">#03</div>
-               <h3 className="text-2xl font-serif mb-3 text-brand-charcoal group-hover:text-black transition-colors">Restorasi Tekstur</h3>
-               <p className="text-stone-500 text-sm font-light leading-relaxed max-w-md">Biarkan gravitasi bekerja. Jika intervensi mekanis dibutuhkan, aplikasikan penetrasi uap suhu rendah perlahan dari lapisan interior, memastikan tekstur mentah (raw texture) tidak tergantikan oleh kilap sintetis.</p>
-            </div>
+            {points.map((pt: any, idx: number) => (
+              <div key={idx} className="group border-l-2 border-transparent hover:border-brand-bronze pl-6 transition-colors duration-300">
+                 <div className="text-brand-bronze text-sm font-mono tracking-widest mb-3">{pt.num}</div>
+                 <h3 className="text-2xl font-serif mb-3 text-brand-charcoal group-hover:text-black transition-colors">{pt.title}</h3>
+                 <p className="text-stone-500 text-sm font-light leading-relaxed max-w-md">{pt.desc}</p>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -467,29 +498,9 @@ function CareGuideSection({ content }: { content: any }) {
 }
 
 function TestimonialSection({ content }: { content: any }) {
-  const testimonials = [
-    {
-      id: 1,
-      name: "Rizky Firmansyah",
-      role: "Denim Enthusiast",
-      text: "Kualitas raw denim impor dari NAKADUO benar-benar luar biasa. Fading yang dihasilkan setelah 6 bulan pemakaian sangat berkarakter. Sangat sebanding dengan harganya.",
-      rating: 5,
-    },
-    {
-      id: 2,
-      name: "Daniel Adrian",
-      role: "Arsitek",
-      text: "Selvedge denim yang saya beli memiliki konstruksi yang sangat presisi. Sangat pas untuk aktivitas harian saya. Desain streetwear mereka juga punya estetika yang memukau tanpa terkesan berlebihan.",
-      rating: 5,
-    },
-    {
-      id: 3,
-      name: "Ahmad Fauzi",
-      role: "Creative Director",
-      text: "Sangat puas dengan potongan slim fit dari koleksi terbarunya. Detail jahitannya rapi dan materialnya terasa sangat premium. Celana paling nyaman yang pernah saya pakai.",
-      rating: 5,
-    }
-  ];
+  const testimonials = content.testimonials && Array.isArray(content.testimonials) ? content.testimonials : [];
+
+  if (!testimonials.length) return null;
 
   return (
     <section id="testimonials" className="py-24 bg-stone-100 overflow-hidden relative border-y border-stone-200">
@@ -500,9 +511,9 @@ function TestimonialSection({ content }: { content: any }) {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-          {testimonials.map((t, idx) => (
+          {testimonials.map((t: any, idx: number) => (
             <motion.div 
-              key={t.id}
+              key={idx}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -510,7 +521,7 @@ function TestimonialSection({ content }: { content: any }) {
               className="bg-white p-8 lg:p-10 border border-stone-200 hover:border-brand-charcoal/30 transition-colors shadow-sm relative group flex flex-col h-full"
             >
               <div className="flex gap-1 mb-6">
-                {[...Array(t.rating)].map((_, i) => <span key={i} className="text-brand-charcoal text-xs">★</span>)}
+                {[...Array(t.rating || 5)].map((_, i) => <span key={i} className="text-brand-charcoal text-xs">★</span>)}
               </div>
               <p className="font-sans font-light text-stone-600 leading-relaxed mb-8 text-sm lg:text-base flex-grow">"{t.text}"</p>
               <div className="mt-auto">
@@ -542,7 +553,7 @@ function GallerySection({ content }: { content: any }) {
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-[1px] auto-rows-[300px] bg-brand-charcoal border border-brand-canvas/10">
           <div className="md:col-span-2 md:row-span-2 bg-stone-900 relative group overflow-hidden">
-             <img src="https://images.unsplash.com/photo-1576995853123-5a10305d93c0?q=80&w=2070&auto=format&fit=crop" className="w-full h-full object-cover filter brightness-75 transition-all duration-[2s] group-hover:scale-105 group-hover:brightness-100" alt="Store stocks" />
+             <img src={content.galleryImage1 || "https://images.unsplash.com/photo-1576995853123-5a10305d93c0?q=80&w=2070&auto=format&fit=crop"} className="w-full h-full object-cover filter brightness-75 transition-all duration-[2s] group-hover:scale-105 group-hover:brightness-100" alt="Store stocks" />
              <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-bottom p-8 flex-col justify-end">
                 <span className="text-white font-serif text-2xl mb-2">Gudang Penyimpanan</span>
                 <span className="text-stone-400 font-mono text-[10px] uppercase tracking-widest">In-house inventory control</span>
@@ -552,21 +563,21 @@ function GallerySection({ content }: { content: any }) {
              <div className="flex gap-1 mb-6">
                {[1,2,3,4,5].map(i => <span key={i} className="text-brand-charcoal text-xs">★</span>)}
              </div>
-             <p className="font-serif italic text-lg leading-relaxed mb-6">"Arsitektur potongan sangat presisi. Ketebalan material memberi bobot premium namun tetap memfasilitasi artikulasi gerak dinamis. Absolute masterpiece."</p>
-             <span className="text-stone-500 font-mono text-[10px] uppercase tracking-widest">- Bima, Jakarta</span>
+             <p className="font-serif italic text-lg leading-relaxed mb-6">{content.galleryTesti1Text || "\"Arsitektur potongan sangat presisi. Ketebalan material memberi bobot premium namun tetap memfasilitasi artikulasi gerak dinamis. Absolute masterpiece.\""}</p>
+             <span className="text-stone-500 font-mono text-[10px] uppercase tracking-widest">{content.galleryTesti1Author || "- Bima, Jakarta"}</span>
           </div>
           <div className="bg-stone-900 relative group overflow-hidden">
-             <img src="https://images.unsplash.com/photo-1584370848010-d7fe6bc767ec?q=80&w=1974&auto=format&fit=crop" className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-1000" alt="Detail" />
+             <img src={content.galleryImage2 || "https://images.unsplash.com/photo-1584370848010-d7fe6bc767ec?q=80&w=1974&auto=format&fit=crop"} className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-1000" alt="Detail" />
           </div>
           <div className="bg-stone-900 relative group overflow-hidden">
-             <img src="https://images.unsplash.com/photo-1604147706283-d7119b5b822c?q=80&w=1974&auto=format&fit=crop" className="w-full h-full object-cover filter brightness-75 group-hover:brightness-100 transition-all duration-1000" alt="Detail" />
+             <img src={content.galleryImage3 || "https://images.unsplash.com/photo-1604147706283-d7119b5b822c?q=80&w=1974&auto=format&fit=crop"} className="w-full h-full object-cover filter brightness-75 group-hover:brightness-100 transition-all duration-1000" alt="Detail" />
           </div>
           <div className="bg-[#111111] p-10 flex flex-col justify-center text-brand-canvas">
              <div className="flex gap-1 mb-6">
                {[1,2,3,4,5].map(i => <span key={i} className="text-brand-bronze text-xs">★</span>)}
              </div>
-             <p className="font-serif italic text-lg leading-relaxed mb-6">"Siluet konstruksinya di luar ekspektasi, merekonstruksi postur menjadi jauh lebih terstruktur dan tajam. Ini standar yang saya cari."</p>
-             <span className="text-stone-500 font-mono text-[10px] uppercase tracking-widest">- Arya, Surabaya</span>
+             <p className="font-serif italic text-lg leading-relaxed mb-6">{content.galleryTesti2Text || "\"Siluet konstruksinya di luar ekspektasi, merekonstruksi postur menjadi jauh lebih terstruktur dan tajam. Ini standar yang saya cari.\""}</p>
+             <span className="text-stone-500 font-mono text-[10px] uppercase tracking-widest">{content.galleryTesti2Author || "- Arya, Surabaya"}</span>
           </div>
         </div>
       </div>
@@ -575,13 +586,10 @@ function GallerySection({ content }: { content: any }) {
 }
 
 function FAQSection({ content }: { content: any }) {
-  const faqs = [
-    { q: "Bagaimana cara menentukan kesesuaian fitting secara absolut?", a: "Setiap spesifikasi garmen kami dilengkapi topografi dimensi yang detail. Kami merekomendasikan kalibrasi menyilang dengan mengukur perimeter garmen andalan Anda, demi memastikan tingkat fiksasi yang paripurna." },
-    { q: "Apakah logistik pengiriman menjangkau area operasional terluar?", a: "Tentu. Kami mengutilisasi infrastruktur logistik tier-1 nasional dengan sistem pelacakan mutakhir, menjamin akuisisi produk dengan kompromi cacat nol ke semua titik demografis Indonesia." },
-    { q: "Bagaimana terminologi garansi dan kebijakan penukaran diatur?", a: "Kesesuaian adalah hak mutlak Anda. Kami memfasilitasi asimilasi penggantian siluet (size-exchange) dengan tenggat 48 jam paska konfirmasi akuisisi, mensyaratkan preservasi kondisi fabrik orisinal (unwashed, original tagging intact)." }
-  ];
-
+  const faqs = content.faqs && Array.isArray(content.faqs) ? content.faqs : [];
   const [open, setOpen] = useState<number | null>(0);
+
+  if (!faqs.length) return null;
 
   return (
     <section className="py-32 bg-brand-canvas">
@@ -592,7 +600,7 @@ function FAQSection({ content }: { content: any }) {
         </div>
         
         <div className="space-y-0 border-y border-brand-charcoal/10">
-          {faqs.map((faq, idx) => (
+          {faqs.map((faq: any, idx: number) => (
              <div key={idx} className="border-b border-brand-charcoal/10 last:border-b-0">
                 <button 
                   onClick={() => setOpen(open === idx ? null : idx)}
