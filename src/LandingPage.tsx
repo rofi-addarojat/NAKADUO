@@ -126,58 +126,102 @@ function Navbar() {
 function Hero({ content }: { content: any }) {
   const headlineParts = content.headline.split('dalam');
   const { scrollY } = useScroll();
-  const y = useTransform(scrollY, [0, 1000], [0, 300]);
+  const floatY = useTransform(scrollY, [0, 500], [0, -50]);
+  const mainImageParallax = useTransform(scrollY, [0, 1000], [0, 120]);
   
   return (
-    <section id="home" className="relative min-h-screen flex flex-col lg:flex-row items-center bg-brand-canvas pt-24 lg:pt-0">
+    <section id="home" className="relative min-h-[100svh] flex flex-col lg:flex-row items-center justify-center bg-brand-canvas pt-24 lg:pt-0 overflow-hidden">
       
-      {/* Left Side: Text Section */}
-      <div className="w-full lg:w-1/2 flex flex-col justify-center px-4 sm:px-6 lg:px-16 xl:px-24 py-12 lg:py-32 relative z-10 lg:mt-0">
+      {/* Background Decorative Elements */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+        <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-stone-200/50 rounded-full blur-[100px] mix-blend-multiply"></div>
+        <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#E5E0D8]/40 rounded-full blur-[100px] mix-blend-multiply"></div>
+      </div>
+
+      <div className="max-w-[90rem] mx-auto w-full px-4 sm:px-6 lg:px-12 flex flex-col lg:flex-row items-center gap-12 lg:gap-16 relative z-10">
+        
+        {/* Left Typography */}
         <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: "easeOut" }}
-          className="w-full max-w-2xl space-y-10"
+          initial={{ opacity: 0, x: -30 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+          className="w-full lg:w-5/12 flex flex-col justify-center pt-8 lg:pt-0"
         >
-          <div className="space-y-6">
-            <span className="text-brand-bronze font-mono uppercase tracking-[0.2em] text-[10px] sm:text-xs">Authentic & Premium Imports</span>
-            <h1 className="text-6xl sm:text-7xl lg:text-[5.5rem] xl:text-[6rem] font-serif text-brand-charcoal leading-[0.9] tracking-tight">
-              {headlineParts[0]}
-              <br />
-              <span className="italic font-light lg:ml-12 text-stone-400">{headlineParts.length > 1 ? ` dalam ${headlineParts[1]}` : content.tagline}</span>
-            </h1>
+          <div className="flex items-center gap-4 mb-8">
+            <span className="w-12 h-px bg-brand-bronze"></span>
+            <span className="text-brand-bronze font-mono uppercase tracking-[0.25em] text-[10px] sm:text-xs font-semibold">Premium Imports</span>
           </div>
-          <p className="text-base sm:text-lg text-stone-500 max-w-md leading-relaxed font-light lg:ml-12">
+
+          <h1 className="text-5xl sm:text-7xl lg:text-[5rem] xl:text-8xl font-serif text-brand-charcoal leading-[0.95] tracking-[-0.02em] mb-8">
+            {headlineParts[0]}
+            <br />
+            <span className="italic font-light text-stone-500 lg:pl-16 sm:pl-8 block mt-3">
+              {headlineParts.length > 1 ? `dalam ${headlineParts[1]}` : content.tagline}
+            </span>
+          </h1>
+          
+          <p className="text-base sm:text-lg text-stone-500 max-w-md leading-relaxed font-light mb-12 border-l border-brand-bronze/30 pl-6 ml-2">
             {content.description}
           </p>
-          <div className="pt-6 lg:ml-12">
-            <a href="#collection" className="inline-flex items-center justify-center gap-4 bg-brand-charcoal text-white px-10 py-5 text-[11px] tracking-[0.2em] uppercase hover:bg-black transition-all group">
-              <span>Jelajahi Sekarang</span> 
+
+          <div className="flex flex-wrap items-center gap-8 ml-2">
+            <a href="#collection" className="inline-flex items-center justify-center gap-4 bg-brand-charcoal text-brand-canvas px-8 py-5 text-[10px] sm:text-xs tracking-[0.2em] uppercase hover:bg-brand-bronze transition-all duration-500 group shadow-xl hover:-translate-y-1">
+              <span>Jelajahi Koleksi</span> 
               <ArrowRight className="h-4 w-4 group-hover:translate-x-2 transition-transform duration-300" />
+            </a>
+            <a href="#gallery" className="text-[10px] sm:text-xs font-mono tracking-[0.15em] uppercase text-stone-500 hover:text-brand-charcoal transition-colors flex items-center gap-2 relative after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-full after:h-[1px] after:bg-brand-bronze/0 hover:after:bg-brand-bronze/100 after:transition-all">
+              Lihat Galeri
             </a>
           </div>
         </motion.div>
-      </div>
 
-      {/* Right Side: Full Height Image Section */}
-      <motion.div 
-         initial={{ opacity: 0 }}
-         animate={{ opacity: 1 }}
-         transition={{ duration: 1.5, delay: 0.2 }}
-        className="w-full lg:w-1/2 relative h-[50vh] lg:h-screen lg:min-h-screen origin-center overflow-hidden"
-      >
-        <motion.div style={{ y }} className="absolute -top-[300px] -bottom-[300px] left-0 right-0 bg-brand-charcoal">
-          <motion.img 
-            src="https://images.unsplash.com/photo-1542272454315-4c01d7abdf4a?q=80&w=2070&auto=format&fit=crop" 
-            alt="Premium denim"
-            initial={{ scale: 1 }}
-            animate={{ scale: 1.1 }}
-            transition={{ duration: 25, repeat: Infinity, repeatType: "reverse", ease: "linear" }}
-            className="w-full h-full object-cover filter brightness-95 opacity-90 object-top lg:object-center"
-          />
-        </motion.div>
-      </motion.div>
-      
+        {/* Right Images (Editorial Collage) */}
+        <div className="w-full lg:w-7/12 relative h-[50vh] sm:h-[60vh] lg:h-[80vh] mt-10 lg:mt-0 flex-shrink-0">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 1.5, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className="absolute top-0 right-0 w-[85%] sm:w-[80%] h-[90%] sm:h-[95%] bg-stone-200 overflow-hidden shadow-2xl"
+          >
+            <motion.img 
+              style={{ y: mainImageParallax }}
+              src="https://images.unsplash.com/photo-1542272454315-4c01d7abdf4a?q=80&w=2070&auto=format&fit=crop" 
+              alt="Premium denim"
+              initial={{ scale: 1.15 }}
+              animate={{ scale: 1.1 }}
+              transition={{ duration: 2.5, ease: "easeOut" }}
+              className="w-full h-full object-cover object-center filter contrast-125 saturate-50 origin-top"
+            />
+            <div className="absolute inset-0 bg-gradient-to-tr from-brand-charcoal/20 via-transparent to-transparent"></div>
+          </motion.div>
+
+          {/* Overlapping offset image */}
+          <motion.div 
+            initial={{ opacity: 0, x: -30, y: 30 }}
+            animate={{ opacity: 1, x: 0, y: 0 }}
+            transition={{ duration: 1.5, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            className="absolute bottom-[2%] sm:bottom-0 left-0 w-[55%] h-[50%] sm:h-[60%] bg-stone-100 overflow-hidden shadow-2xl border-4 sm:border-8 border-brand-canvas"
+            style={{ y: floatY }}
+          >
+            <img 
+              src="https://images.unsplash.com/photo-1576995853123-5a10305d93c0?q=80&w=2070&auto=format&fit=crop" 
+              alt="Denim texture details"
+              className="w-full h-full object-cover object-center filter grayscale contrast-125 hover:grayscale-0 transition-all duration-700"
+            />
+          </motion.div>
+
+          {/* Small accent badge */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.5, rotate: -20 }}
+            animate={{ opacity: 1, scale: 1, rotate: 0 }}
+            transition={{ duration: 1, delay: 1, type: "spring" }}
+            className="absolute top-[8%] sm:top-[15%] left-[-2%] sm:left-[5%] bg-brand-canvas rounded-full p-4 shadow-xl text-center aspect-square flex flex-col justify-center items-center h-20 w-20 sm:h-28 sm:w-28 z-20 border border-brand-charcoal/5"
+          >
+             <span className="text-[10px] sm:text-xs font-serif italic text-brand-charcoal leading-none mb-1">Authentic</span>
+             <span className="text-sm sm:text-base font-bold text-brand-bronze leading-none font-mono">DENIM</span>
+          </motion.div>
+        </div>
+      </div>
     </section>
   );
 }
@@ -258,14 +302,14 @@ function CollectionSection({ products, waAdmin }: { products: any[], waAdmin: st
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-end mb-20 pb-8 border-b border-stone-200">
           <div>
-            <span className="text-brand-bronze font-mono uppercase tracking-[0.2em] text-[10px] mb-4 block">The Collection</span>
-            <h2 className="text-5xl lg:text-7xl font-serif text-brand-charcoal mb-4">Koleksi <span className="italic font-light">Pilihan</span></h2>
+            <span className="text-brand-bronze font-mono uppercase tracking-[0.2em] text-[10px] mb-4 block">Katalog Arsip</span>
+            <h2 className="text-5xl lg:text-7xl font-serif text-brand-charcoal mb-4">Investasi <span className="italic font-light">Sartorial</span></h2>
           </div>
         </div>
 
         {products.length === 0 ? (
           <div className="text-center py-20 border border-stone-200 bg-white">
-             <p className="text-stone-500 font-mono text-xs uppercase tracking-widest">Belum ada produk. Tambahkan produk melalui dashboard Admin.</p>
+             <p className="text-stone-500 font-mono text-[10px] uppercase tracking-widest">Katalog Saat Ini Kosong. Harap Lakukan Kurasi Produk melalui Dashboard.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 xl:gap-12">
@@ -346,9 +390,9 @@ function CareGuideSection() {
         <div className="flex flex-col lg:flex-row gap-16 lg:gap-24">
           <div className="flex-1">
              <div className="mb-16">
-                <span className="text-brand-bronze font-mono uppercase tracking-[0.2em] text-[10px] mb-4 block">Seni Merawat Denim</span>
-                <h2 className="text-5xl lg:text-7xl font-serif text-brand-charcoal mb-6 leading-none">Panduan <br/><span className="italic font-light text-stone-400">Perawatan</span></h2>
-                <p className="text-stone-500 text-lg font-light leading-relaxed max-w-md">Sebuah investasi perlu dirawat. Panduan kami untuk memastikan denim Anda tidak sekadar memudar, melainkan bertransformasi menjadi karya seni yang sarat cerita.</p>
+                <span className="text-brand-bronze font-mono uppercase tracking-[0.2em] text-[10px] mb-4 block">Manifesto Durabilitas</span>
+                <h2 className="text-5xl lg:text-7xl font-serif text-brand-charcoal mb-6 leading-none">Seni <br/><span className="italic font-light text-stone-400">Preservasi</span></h2>
+                <p className="text-stone-500 text-lg font-light leading-relaxed max-w-md">Karakter sesungguhnya lahir dari perjalanan, bukan etalase. Pahami protokol perawatan esensial untuk merawat mahakarya denim Anda agar fudar menua dengan estetika maksimal.</p>
              </div>
              
              <div className="aspect-square bg-stone-200 overflow-hidden shrink-0 hidden lg:block">
@@ -359,18 +403,18 @@ function CareGuideSection() {
           <div className="flex-1 flex flex-col justify-center space-y-12">
             <div className="group border-l-2 border-transparent hover:border-brand-bronze pl-6 transition-colors duration-300">
                <div className="text-brand-bronze text-sm font-mono tracking-widest mb-3">#01</div>
-               <h3 className="text-2xl font-serif mb-3 text-brand-charcoal group-hover:text-black transition-colors">Pencucian Air Dingin</h3>
-               <p className="text-stone-500 text-sm font-light leading-relaxed max-w-md">Gunakan air dingin dengan siklus putaran lembut untuk mencegah penyusutan dan pemudaran warna berlebih. Secara teratur, balik bagian dalam ke luar sebelum dicuci.</p>
+               <h3 className="text-2xl font-serif mb-3 text-brand-charcoal group-hover:text-black transition-colors">Ritual Air Dingin</h3>
+               <p className="text-stone-500 text-sm font-light leading-relaxed max-w-md">Sebuah purifikasi. Gunakan air bersuhu rendah guna mempertahankan integritas benang ikat indigo, meminimalisasi penyusutan struktural, dan menstabilkan kontras warna.</p>
             </div>
             <div className="group border-l-2 border-transparent hover:border-brand-bronze pl-6 transition-colors duration-300">
                <div className="text-brand-bronze text-sm font-mono tracking-widest mb-3">#02</div>
-               <h3 className="text-2xl font-serif mb-3 text-brand-charcoal group-hover:text-black transition-colors">Jemur Alami Terbalik</h3>
-               <p className="text-stone-500 text-sm font-light leading-relaxed max-w-md">Hindari mesin pengering bersuhu panas. Jemur celana dalam keadaan terbalik (inside-out) di tempat teduh agar serat tetap kuat dan bebas jamur.</p>
+               <h3 className="text-2xl font-serif mb-3 text-brand-charcoal group-hover:text-black transition-colors">Pengeringan Natural</h3>
+               <p className="text-stone-500 text-sm font-light leading-relaxed max-w-md">Hindari agresi mesin termal. Proses pengeringan harus dilakukan secara bertahap dalam konfigurasi terbalik (inside-out) pada sirkulasi udara terbuka, melindungi serat kapas murni dari kelelahan material.</p>
             </div>
             <div className="group border-l-2 border-transparent hover:border-brand-bronze pl-6 transition-colors duration-300">
                <div className="text-brand-bronze text-sm font-mono tracking-widest mb-3">#03</div>
-               <h3 className="text-2xl font-serif mb-3 text-brand-charcoal group-hover:text-black transition-colors">Setrika Suhu Rendah</h3>
-               <p className="text-stone-500 text-sm font-light leading-relaxed max-w-md">Jika sangat perlu disetrika, gunakan suhu paling rendah, atau setrika saat celana masih setengah lembab untuk menghindari kilap pada permukaan denim.</p>
+               <h3 className="text-2xl font-serif mb-3 text-brand-charcoal group-hover:text-black transition-colors">Restorasi Tekstur</h3>
+               <p className="text-stone-500 text-sm font-light leading-relaxed max-w-md">Biarkan gravitasi bekerja. Jika intervensi mekanis dibutuhkan, aplikasikan penetrasi uap suhu rendah perlahan dari lapisan interior, memastikan tekstur mentah (raw texture) tidak tergantikan oleh kilap sintetis.</p>
             </div>
           </div>
         </div>
@@ -384,9 +428,9 @@ function GallerySection() {
     <section id="gallery" className="py-32 bg-brand-charcoal text-brand-canvas">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-20">
-          <span className="text-brand-bronze font-mono uppercase tracking-[0.2em] text-[10px] mb-4 block">Visual Evidence</span>
-          <h2 className="text-5xl lg:text-6xl font-serif text-brand-canvas mb-4 tracking-tight">Testimoni & <span className="italic font-light">Galeri</span></h2>
-          <p className="text-stone-400 font-light max-w-lg mx-auto">Mereka yang telah merasakan standar tinggi kami. Ini bukan sekadar pakaian, melainkan tentang rasa percaya diri dan karakter.</p>
+          <span className="text-brand-bronze font-mono uppercase tracking-[0.2em] text-[10px] mb-4 block">Kurasi Dokumenter</span>
+          <h2 className="text-5xl lg:text-6xl font-serif text-brand-canvas mb-4 tracking-tight">Arsip <span className="italic font-light">Representasi</span></h2>
+          <p className="text-stone-400 font-light max-w-lg mx-auto">Rekam jejak mereka yang memahami nilai dari material superior. Lebih dari sekadar pakaian, ini tentang pernyataan karakter absolut.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-[1px] auto-rows-[300px] bg-brand-charcoal border border-brand-canvas/10">
@@ -401,7 +445,7 @@ function GallerySection() {
              <div className="flex gap-1 mb-6">
                {[1,2,3,4,5].map(i => <span key={i} className="text-brand-charcoal text-xs">★</span>)}
              </div>
-             <p className="font-serif italic text-lg leading-relaxed mb-6">"Bahannya tebal tapi tidak kaku. Jahitannya sangat persis seperti barang branded mall. Kualitas elit."</p>
+             <p className="font-serif italic text-lg leading-relaxed mb-6">"Arsitektur potongan sangat presisi. Ketebalan material memberi bobot premium namun tetap memfasilitasi artikulasi gerak dinamis. Absolute masterpiece."</p>
              <span className="text-stone-500 font-mono text-[10px] uppercase tracking-widest">- Bima, Jakarta</span>
           </div>
           <div className="bg-stone-900 relative group overflow-hidden">
@@ -414,7 +458,7 @@ function GallerySection() {
              <div className="flex gap-1 mb-6">
                {[1,2,3,4,5].map(i => <span key={i} className="text-brand-bronze text-xs">★</span>)}
              </div>
-             <p className="font-serif italic text-lg leading-relaxed mb-6">"Fitting slim-nya pas banget di kaki. Pengiriman juga super ngebut. Ini pembelian kedua saya."</p>
+             <p className="font-serif italic text-lg leading-relaxed mb-6">"Siluet konstruksinya di luar ekspektasi, merekonstruksi postur menjadi jauh lebih terstruktur dan tajam. Ini standar yang saya cari."</p>
              <span className="text-stone-500 font-mono text-[10px] uppercase tracking-widest">- Arya, Surabaya</span>
           </div>
         </div>
@@ -425,9 +469,9 @@ function GallerySection() {
 
 function FAQSection() {
   const faqs = [
-    { q: "Bagaimana cara memastikan ukuran yang presisi?", a: "Setiap profil produk kami dilengkapi dengan Size Chart mendetail. Kami merekomendasikan Anda untuk mengukur lingkar pinggang celana favorit yang Anda miliki saat ini sebagai parameter yang paling akurat." },
-    { q: "Apakah melayani pengiriman ke luar pulau?", a: "Tentu. Kami bermitra dengan layanan logistik tier-1 untuk memastikan pesanan Anda tiba dengan aman, terjamin, dan tepat waktu ke seluruh penjuru Indonesia." },
-    { q: "Bagaimana kebijakan pengembalian produk?", a: "Komitmen kepuasan Anda adalah prioritas. Kami menerima penukaran ukuran (size exchange) maksimal 48 jam sejak paket diterima, dengan ketentuan produk dalam kondisi orisinal, belum dicuci, dan seluruh label tanda pengenal masih terpasang." }
+    { q: "Bagaimana cara menentukan kesesuaian fitting secara absolut?", a: "Setiap spesifikasi garmen kami dilengkapi topografi dimensi yang detail. Kami merekomendasikan kalibrasi menyilang dengan mengukur perimeter garmen andalan Anda, demi memastikan tingkat fiksasi yang paripurna." },
+    { q: "Apakah logistik pengiriman menjangkau area operasional terluar?", a: "Tentu. Kami mengutilisasi infrastruktur logistik tier-1 nasional dengan sistem pelacakan mutakhir, menjamin akuisisi produk dengan kompromi cacat nol ke semua titik demografis Indonesia." },
+    { q: "Bagaimana terminologi garansi dan kebijakan penukaran diatur?", a: "Kesesuaian adalah hak mutlak Anda. Kami memfasilitasi asimilasi penggantian siluet (size-exchange) dengan tenggat 48 jam paska konfirmasi akuisisi, mensyaratkan preservasi kondisi fabrik orisinal (unwashed, original tagging intact)." }
   ];
 
   const [open, setOpen] = useState<number | null>(0);
@@ -436,8 +480,8 @@ function FAQSection() {
     <section className="py-32 bg-brand-canvas">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <span className="text-brand-bronze font-mono uppercase tracking-[0.2em] text-[10px] mb-4 block">Information</span>
-          <h2 className="text-4xl font-serif text-brand-charcoal">Pertanyaan Umum (FAQ)</h2>
+          <span className="text-brand-bronze font-mono uppercase tracking-[0.2em] text-[10px] mb-4 block">Inkuiri Esensial</span>
+          <h2 className="text-4xl font-serif text-brand-charcoal">Informasi Eksklusif</h2>
         </div>
         
         <div className="space-y-0 border-y border-brand-charcoal/10">
