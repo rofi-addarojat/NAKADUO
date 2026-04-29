@@ -1,0 +1,74 @@
+{
+  "entities": {
+    "Admin": {
+      "title": "Admin",
+      "description": "Administrator user for the platform",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["email", "createdAt"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "Imported denim product",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "price": { "type": "number" },
+        "imageUrl": { "type": "string" },
+        "countryOfOrigin": { "type": "string" },
+        "fit": { "type": "string" },
+        "stock": { "type": "number" },
+        "whatsAppLink": { "type": "string" },
+        "marketplaceLink": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["name", "price", "imageUrl", "countryOfOrigin", "fit", "stock", "createdAt", "updatedAt"]
+    },
+    "Content": {
+      "title": "Content",
+      "description": "Landing page dynamic content",
+      "type": "object",
+      "properties": {
+        "headline": { "type": "string" },
+        "description": { "type": "string" },
+        "tagline": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["headline", "description", "tagline", "updatedAt"]
+    },
+    "Settings": {
+      "title": "Settings",
+      "description": "Global store settings",
+      "type": "object",
+      "properties": {
+        "faviconUrl": { "type": "string" },
+        "logoUrl": { "type": "string" },
+        "waAdmin": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["faviconUrl", "logoUrl", "waAdmin", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/admins/{userId}": {
+      "schema": { "$ref": "#/entities/Admin" },
+      "description": "Administrator roles"
+    },
+    "/products/{productId}": {
+      "schema": { "$ref": "#/entities/Product" },
+      "description": "Store products catalog"
+    },
+    "/siteContent/landingPage": {
+      "schema": { "$ref": "#/entities/Content" },
+      "description": "Landing page dynamic content"
+    },
+    "/settings/general": {
+      "schema": { "$ref": "#/entities/Settings" },
+      "description": "Global store settings"
+    }
+  }
+}

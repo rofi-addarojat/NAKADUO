@@ -1,0 +1,119 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+    
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isAdmin() {
+      return isSignedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+    
+    function incoming() {
+      return request.resource.data;
+    }
+    
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidProductCreate(data) {
+      return data.keys().hasAll(['name', 'price', 'imageUrl', 'countryOfOrigin', 'fit', 'stock', 'createdAt', 'updatedAt'])
+        && (data.keys().size() >= 8 && data.keys().size() <= 10)
+        && data.name is string && data.name.size() > 0 && data.name.size() <= 200
+        && data.price is number
+        && data.imageUrl is string && data.imageUrl.size() <= 2000
+        && data.countryOfOrigin is string && data.countryOfOrigin.size() <= 100
+        && data.fit is string && data.fit.size() <= 50
+        && data.stock is number
+        && data.createdAt == request.time
+        && data.updatedAt == request.time
+        && (!('whatsAppLink' in data) || (data.whatsAppLink is string && data.whatsAppLink.size() <= 2000))
+        && (!('marketplaceLink' in data) || (data.marketplaceLink is string && data.marketplaceLink.size() <= 2000));
+    }
+
+    function isValidProductUpdate(data) {
+      return data.name is string && data.name.size() > 0 && data.name.size() <= 200
+        && data.price is number
+        && data.imageUrl is string && data.imageUrl.size() <= 2000
+        && data.countryOfOrigin is string && data.countryOfOrigin.size() <= 100
+        && data.fit is string && data.fit.size() <= 50
+        && data.stock is number
+        && data.createdAt == existing().createdAt
+        && data.updatedAt == request.time
+        && (!('whatsAppLink' in data) || (data.whatsAppLink is string && data.whatsAppLink.size() <= 2000))
+        && (!('marketplaceLink' in data) || (data.marketplaceLink is string && data.marketplaceLink.size() <= 2000));
+    }
+
+    // Admins
+    match /admins/{userId} {
+      allow get: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+      // Only readable by admins or owner.
+      allow read: if isSignedIn() && isAdmin();
+      allow write: if false; 
+    }
+
+    // Products
+    match /products/{productId} {
+      // Products are publicly readable for storefront
+      allow get: if isValidId(productId) && true;
+      allow list: if true; 
+      
+      allow create: if isAdmin() && isValidId(productId) && isValidProductCreate(incoming());
+      
+      allow update: if isAdmin() && isValidId(productId) && isValidProductUpdate(incoming()) && (
+        incoming().diff(existing()).affectedKeys().hasOnly(['name', 'price', 'imageUrl', 'countryOfOrigin', 'fit', 'stock', 'whatsAppLink', 'marketplaceLink', 'updatedAt'])
+      );
+      
+      allow delete: if isAdmin() && isValidId(productId);
+    }
+    
+    // siteContent
+    match /siteContent/{docId} {
+      allow get: if isValidId(docId) && true;
+      allow list: if true;
+      allow create: if isAdmin() && docId == 'landingPage'
+        && incoming().keys().hasAll(['headline', 'description', 'tagline', 'updatedAt'])
+        && incoming().keys().size() == 4
+        && incoming().headline is string && incoming().headline.size() <= 500
+        && incoming().description is string && incoming().description.size() <= 2000
+        && incoming().tagline is string && incoming().tagline.size() <= 500
+        && incoming().updatedAt == request.time;
+      allow update: if isAdmin() && docId == 'landingPage'
+        && incoming().headline is string && incoming().headline.size() <= 500
+        && incoming().description is string && incoming().description.size() <= 2000
+        && incoming().tagline is string && incoming().tagline.size() <= 500
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly(['headline', 'description', 'tagline', 'updatedAt']);
+      allow delete: if false; // Don't delete landing page
+    }
+    
+    // settings
+    match /settings/{docId} {
+       allow get: if isValidId(docId) && true;
+       allow list: if true;
+       allow create: if isAdmin() && docId == 'general'
+         && incoming().keys().hasAll(['faviconUrl', 'logoUrl', 'waAdmin', 'updatedAt'])
+         && incoming().keys().size() == 4
+         && incoming().faviconUrl is string && incoming().faviconUrl.size() <= 2000
+         && incoming().logoUrl is string && incoming().logoUrl.size() <= 2000
+         && incoming().waAdmin is string && incoming().waAdmin.size() <= 50
+         && incoming().updatedAt == request.time;
+       allow update: if isAdmin() && docId == 'general'
+         && incoming().faviconUrl is string && incoming().faviconUrl.size() <= 2000
+         && incoming().logoUrl is string && incoming().logoUrl.size() <= 2000
+         && incoming().waAdmin is string && incoming().waAdmin.size() <= 50
+         && incoming().updatedAt == request.time
+         && incoming().diff(existing()).affectedKeys().hasOnly(['faviconUrl', 'logoUrl', 'waAdmin', 'updatedAt']);
+       allow delete: if false;
+    }
+  }
+}
