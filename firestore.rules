@@ -89,11 +89,9 @@ service cloud.firestore {
       allow get: if isValidId(productId) && true;
       allow list: if true; 
       
-      allow create: if isAdmin() && isValidId(productId) && isValidProductCreate(incoming());
+      allow create: if isAdmin() && isValidId(productId) && incoming().updatedAt == request.time;
       
-      allow update: if isAdmin() && isValidId(productId) && isValidProductUpdate(incoming()) && (
-        incoming().diff(existing()).affectedKeys().hasOnly(['name', 'price', 'imageUrl', 'countryOfOrigin', 'fit', 'stock', 'whatsAppLink', 'marketplaceLink', 'updatedAt'])
-      );
+      allow update: if isAdmin() && isValidId(productId) && incoming().updatedAt == request.time;
       
       allow delete: if isAdmin() && isValidId(productId);
     }
@@ -103,11 +101,9 @@ service cloud.firestore {
       allow get: if isValidId(articleId) && true;
       allow list: if true;
       
-      allow create: if isAdmin() && isValidId(articleId) && isValidArticleCreate(incoming());
+      allow create: if isAdmin() && isValidId(articleId) && incoming().updatedAt == request.time;
       
-      allow update: if isAdmin() && isValidId(articleId) && isValidArticleUpdate(incoming()) && (
-        incoming().diff(existing()).affectedKeys().hasOnly(['title', 'slug', 'content', 'excerpt', 'imageUrl', 'updatedAt'])
-      );
+      allow update: if isAdmin() && isValidId(articleId) && incoming().updatedAt == request.time;
       
       allow delete: if isAdmin() && isValidId(articleId);
     }

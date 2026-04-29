@@ -70,7 +70,11 @@ export default function Admin() {
   const [settings, setSettings] = useState({
     faviconUrl: "",
     logoUrl: "",
-    waAdmin: "0895630454035"
+    waAdmin: "0895630454035",
+    youtubeLink: "",
+    tiktokLink: "",
+    instagramLink: "",
+    facebookLink: ""
   });
 
   // Products State
@@ -176,8 +180,12 @@ export default function Admin() {
         updatedAt: serverTimestamp()
       }, { merge: true });
       notifySuccess('Konten Landing Page berhasil disimpan!');
-    } catch (err) {
-      handleFirestoreError(err, OperationType.WRITE, 'siteContent/landingPage');
+    } catch (err: any) {
+      if (err.message && err.message.includes('permission')) {
+        handleFirestoreError(err, OperationType.WRITE, 'siteContent/landingPage');
+      } else {
+        notifyError(err.message || String(err));
+      }
     }
     setIsSaving(false);
   };
@@ -189,14 +197,18 @@ export default function Admin() {
         updatedAt: serverTimestamp()
       }, { merge: true });
       notifySuccess('Pengaturan Web berhasil disimpan!');
-    } catch (err) {
-      handleFirestoreError(err, OperationType.WRITE, 'settings/general');
+    } catch (err: any) {
+      if (err.message && err.message.includes('permission')) {
+        handleFirestoreError(err, OperationType.WRITE, 'settings/general');
+      } else {
+        notifyError(err.message || String(err));
+      }
     }
   };
 
   const handleAddOrEditProduct = async () => {
     try {
-      const pId = newProduct.id || crypto.randomUUID();
+      const pId = newProduct.id || doc(collection(db, 'products')).id;
       const productData: any = {
         name: newProduct.name,
         price: Number(newProduct.price),
@@ -214,8 +226,12 @@ export default function Admin() {
       notifySuccess(newProduct.id ? 'Produk diperbarui!' : 'Produk ditambahkan!');
       setNewProduct({ id: "", name: "", price: 0, imageUrl: "", countryOfOrigin: "", fit: "", stock: 0, whatsAppLink: "", marketplaceLink: "" });
       loadData();
-    } catch (err) {
-      handleFirestoreError(err, OperationType.WRITE, 'products');
+    } catch (err: any) {
+      if (err.message && err.message.includes('permission')) {
+        handleFirestoreError(err, OperationType.WRITE, 'products');
+      } else {
+        notifyError(err.message || String(err));
+      }
     }
   };
 
@@ -239,15 +255,19 @@ export default function Admin() {
       try {
         await deleteDoc(doc(db, 'products', id));
         loadData();
-      } catch(err) {
-        handleFirestoreError(err, OperationType.DELETE, 'products');
+      } catch(err: any) {
+        if (err.message && err.message.includes('permission')) {
+          handleFirestoreError(err, OperationType.DELETE, 'products');
+        } else {
+          notifyError(err.message || String(err));
+        }
       }
     }
   };
 
   const handleSaveArticle = async () => {
     try {
-      const aId = editingArticleId || crypto.randomUUID();
+      const aId = editingArticleId || doc(collection(db, 'articles')).id;
       const existingArticle = articles.find(a => a.id === aId);
       const articleData: any = {
         ...newArticle,
@@ -260,8 +280,12 @@ export default function Admin() {
       setNewArticle({title:"", slug:"", content:"", excerpt:"", imageUrl:""});
       setEditingArticleId(null);
       loadData();
-    } catch (err) {
-      handleFirestoreError(err, OperationType.WRITE, 'articles');
+    } catch (err: any) {
+      if (err.message && err.message.includes('permission')) {
+        handleFirestoreError(err, OperationType.WRITE, 'articles');
+      } else {
+        notifyError(err.message || String(err));
+      }
     }
   };
 
@@ -283,8 +307,12 @@ export default function Admin() {
             await deleteDoc(doc(db, 'articles', id));
             loadData();
         }
-    } catch(err) {
-         handleFirestoreError(err, OperationType.DELETE, 'articles');
+    } catch(err: any) {
+        if (err.message && err.message.includes('permission')) {
+          handleFirestoreError(err, OperationType.DELETE, 'articles');
+        } else {
+          notifyError(err.message || String(err));
+        }
     }
   };
 
@@ -308,7 +336,7 @@ export default function Admin() {
 
     try {
       await Promise.all(sampleArticles.map(async (article) => {
-        const aId = crypto.randomUUID();
+        const aId = doc(collection(db, 'articles')).id;
         await setDoc(doc(db, 'articles', aId), {
           ...article,
           createdAt: serverTimestamp(),
@@ -317,8 +345,12 @@ export default function Admin() {
       }));
       notifySuccess('Sample articles injected!');
       loadData();
-    } catch (err) {
-      handleFirestoreError(err, OperationType.WRITE, 'articles');
+    } catch (err: any) {
+      if (err.message && err.message.includes('permission')) {
+        handleFirestoreError(err, OperationType.WRITE, 'articles');
+      } else {
+        notifyError(err.message || String(err));
+      }
     }
   };
 
@@ -678,13 +710,17 @@ export default function Admin() {
                   </div>
                </SectionBox>
 
-               <SectionBox title="Brand Assets (Future Proofing)">
+               <SectionBox title="Brand Assets & Sosial Media">
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <InputRow label="URL Favicon (.ico / .png)" value={settings.faviconUrl} onChange={v => setSettings({...settings, faviconUrl: v})} />
                   <InputRow label="URL Logo Kustom Utama (Transparan .png / .svg)" value={settings.logoUrl} onChange={v => setSettings({...settings, logoUrl: v})} />
+                  <InputRow label="Link YouTube URL" value={settings.youtubeLink} onChange={v => setSettings({...settings, youtubeLink: v})} />
+                  <InputRow label="Link TikTok URL" value={settings.tiktokLink} onChange={v => setSettings({...settings, tiktokLink: v})} />
+                  <InputRow label="Link Instagram URL" value={settings.instagramLink} onChange={v => setSettings({...settings, instagramLink: v})} />
+                  <InputRow label="Link Facebook URL" value={settings.facebookLink} onChange={v => setSettings({...settings, facebookLink: v})} />
                  </div>
                  <div className="mt-4 border-t pt-4 text-xs text-stone-400 flex gap-2 items-center">
-                    <Settings className="w-4 h-4 animate-spin-slow"/> Hanya berlaku ketika custom asset feature diaktifkan pada layer display. Saat ini aplikasi menggunakan typografi brand (Teks: NAKADUO).
+                    <Settings className="w-4 h-4 animate-spin-slow"/> Favicon dan Logo Hanya berlaku ketika custom asset feature diaktifkan. Saat ini aplikasi menggunakan typografi brand (Teks: NAKADUO).
                  </div>
                </SectionBox>
              </div>

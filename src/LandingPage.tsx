@@ -9,6 +9,7 @@ import { Helmet } from 'react-helmet-async';
 
 export default function LandingPage() {
   const [products, setProducts] = useState<any[]>([]);
+  const [articles, setArticles] = useState<any[]>([]);
   const [content, setContent] = useState<any>({
     headline: "Investasi Gaya dalam Setiap Langkahmu.",
     description: "Koleksi celana denim dan streetwear impor pilihan dengan kualitas material premium untuk tampilan keren dan percaya diri setiap hari.",
@@ -74,8 +75,30 @@ export default function LandingPage() {
         const productsSnap = await getDocs(collection(db, 'products'));
         const productsData = productsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setProducts(productsData);
-      } catch (err) {
-        handleFirestoreError(err, OperationType.LIST, 'products');
+      } catch (err: any) {
+        if (err.message && err.message.includes('permission')) {
+          handleFirestoreError(err, OperationType.LIST, 'products');
+        } else {
+          console.error("Firestore offline or fetch error (products):", err);
+        }
+      }
+
+      try {
+        const articlesSnap = await getDocs(collection(db, 'articles'));
+        const articlesData = articlesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        // sort by newest
+        articlesData.sort((a: any, b: any) => {
+          const tA = a.createdAt?.toMillis ? a.createdAt.toMillis() : new Date(a.createdAt).getTime();
+          const tB = b.createdAt?.toMillis ? b.createdAt.toMillis() : new Date(b.createdAt).getTime();
+          return tB - tA;
+        });
+        setArticles(articlesData.slice(0, 3)); // show top 3 on landing page
+      } catch (err: any) {
+        if (err.message && err.message.includes('permission')) {
+          handleFirestoreError(err, OperationType.LIST, 'articles');
+        } else {
+          console.error("Firestore offline or fetch error (articles):", err);
+        }
       }
 
       try {
@@ -95,8 +118,12 @@ export default function LandingPage() {
              setContent((prev: any) => ({ ...prev, ...data }));
           }
         }
-      } catch (err) {
-        handleFirestoreError(err, OperationType.GET, 'siteContent/landingPage');
+      } catch (err: any) {
+        if (err.message && err.message.includes('permission')) {
+          handleFirestoreError(err, OperationType.GET, 'siteContent/landingPage');
+        } else {
+          console.error("Firestore offline or fetch error (content):", err);
+        }
       }
       
       try {
@@ -130,14 +157,15 @@ export default function LandingPage() {
         <CareGuideSection content={content} />
         <TestimonialSection content={content} />
         <GallerySection content={content} />
+        <ArticlesSection articles={articles} />
         <FAQSection content={content} />
       </main>
-      <Footer content={content} waAdmin={settings.waAdmin} />
+      <Footer content={content} settings={settings} />
     </div>
   );
 }
 
-function Navbar() {
+export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   return (
     <nav className="fixed w-full z-50 bg-brand-canvas/90 backdrop-blur-xl text-brand-charcoal border-b border-brand-charcoal/5">
@@ -626,7 +654,67 @@ function FAQSection({ content }: { content: any }) {
   );
 }
 
-function Footer({ content, waAdmin }: { content: any, waAdmin: string }) {
+function ArticlesSection({ articles }: { articles: any[] }) {
+  if (!articles.length) return null;
+
+  return (
+    <section className="py-32 bg-stone-100">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-end mb-16 pb-6 border-b border-stone-200">
+          <div>
+            <span className="text-brand-bronze font-mono uppercase tracking-[0.2em] text-[10px] mb-4 block">Jurnal & Publikasi</span>
+            <h2 className="text-4xl lg:text-5xl font-serif text-brand-charcoal">Editorial <span className="italic font-light">Terkini</span></h2>
+          </div>
+          <Link to="/blog" className="hidden sm:inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-brand-charcoal hover:text-brand-bronze transition-colors">
+            Lihat Semua Arsip <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {articles.map((article, idx) => (
+             <motion.div 
+               key={article.id}
+               initial={{ opacity: 0, y: 20 }}
+               whileInView={{ opacity: 1, y: 0 }}
+               viewport={{ once: true }}
+               transition={{ delay: idx * 0.1, duration: 0.8 }}
+               className="group flex flex-col bg-white border border-stone-200 hover:border-brand-bronze/30 transition-all hover:shadow-xl"
+             >
+               <Link to={`/blog/${article.slug}`} className="block relative aspect-[4/3] overflow-hidden bg-stone-100">
+                  {article.imageUrl ? (
+                    <img src={article.imageUrl} alt={article.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000 ease-out" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-stone-300 font-mono text-xs uppercase">No Image</div>
+                  )}
+               </Link>
+               <div className="p-8 flex flex-col flex-1">
+                 <div className="text-[10px] font-mono uppercase tracking-widest text-stone-400 mb-3">
+                    {(article.createdAt?.toDate ? article.createdAt.toDate() : new Date(article.createdAt || Date.now())).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}
+                 </div>
+                 <Link to={`/blog/${article.slug}`} className="block">
+                   <h3 className="font-serif text-xl text-brand-charcoal mb-4 group-hover:text-brand-bronze transition-colors">{article.title}</h3>
+                 </Link>
+                 <p className="text-stone-500 font-light text-sm line-clamp-3 mb-6 flex-1">{article.excerpt}</p>
+                 <Link to={`/blog/${article.slug}`} className="text-[10px] font-mono tracking-[0.15em] uppercase text-brand-charcoal border-b border-brand-charcoal/30 pb-1 mt-auto w-fit group-hover:border-brand-bronze group-hover:text-brand-bronze transition-colors">
+                   Baca Selengkapnya
+                 </Link>
+               </div>
+             </motion.div>
+          ))}
+        </div>
+        
+        <div className="mt-12 text-center sm:hidden">
+           <Link to="/blog" className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-brand-charcoal hover:text-brand-bronze border border-brand-charcoal px-6 py-3 transition-colors">
+            Lihat Semua Arsip
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function Footer({ content, settings }: { content: any, settings: any }) {
+  const waAdmin = settings.waAdmin || "0895630454035";
   return (
     <footer className="bg-brand-charcoal text-brand-canvas py-20 border-t border-brand-charcoal/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -634,7 +722,13 @@ function Footer({ content, waAdmin }: { content: any, waAdmin: string }) {
            <div className="max-w-xs">
              <h2 className="font-serif text-3xl tracking-[0.2em] text-brand-canvas mb-4">NAKADUO<span className="text-brand-bronze font-sans">.</span></h2>
              <p className="text-brand-bronze text-sm italic font-serif mb-2">{content.footerHeadline || "Pilih yang Terbaik, Rasakan Perbedaannya!"}</p>
-             <p className="text-stone-400 text-sm font-light leading-relaxed">{content.footerDesc || "Butik denim impor & premium streetwear pilihan untuk standar pria modern."}</p>
+             <p className="text-stone-400 text-sm font-light leading-relaxed mb-6">{content.footerDesc || "Butik denim impor & premium streetwear pilihan untuk standar pria modern."}</p>
+             <div className="flex items-center gap-4">
+                {settings.instagramLink && <a href={settings.instagramLink} target="_blank" rel="noopener noreferrer" className="text-stone-400 hover:text-white transition-colors text-xs font-mono uppercase tracking-widest">IG</a>}
+                {settings.tiktokLink && <a href={settings.tiktokLink} target="_blank" rel="noopener noreferrer" className="text-stone-400 hover:text-white transition-colors text-xs font-mono uppercase tracking-widest">TK</a>}
+                {settings.youtubeLink && <a href={settings.youtubeLink} target="_blank" rel="noopener noreferrer" className="text-stone-400 hover:text-white transition-colors text-xs font-mono uppercase tracking-widest">YT</a>}
+                {settings.facebookLink && <a href={settings.facebookLink} target="_blank" rel="noopener noreferrer" className="text-stone-400 hover:text-white transition-colors text-xs font-mono uppercase tracking-widest">FB</a>}
+             </div>
            </div>
            <div className="flex flex-col md:text-right space-y-8">
              <div>
