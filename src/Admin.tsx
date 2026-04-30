@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { collection, getDocs, doc, setDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db, handleFirestoreError, OperationType, loginWithGoogle, logout } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
-import { LayoutDashboard, LogOut, Settings, Package, FileText, LayoutTemplate, Save, Plus, Trash2, Image as ImageIcon, Eye } from 'lucide-react';
+import { LayoutDashboard, LogOut, Settings, Package, FileText, LayoutTemplate, Save, Plus, Trash2, Image as ImageIcon, Eye, RefreshCw } from 'lucide-react';
 
 export default function Admin() {
   const [user, setUser] = useState<any>(null);
@@ -117,10 +117,31 @@ export default function Admin() {
   const loadData = async () => {
     try {
       const snap = await getDocs(collection(db, 'products'));
-      setProducts(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      const productsData = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      console.log("Fetched products:", productsData);
+      // Robust Sort by newest
+      const getT = (val: any) => {
+        if (!val) return 0;
+        if (val.toMillis) return val.toMillis();
+        const d = new Date(val);
+        return isNaN(d.getTime()) ? (typeof val === 'number' ? val : 0) : d.getTime();
+      };
+      productsData.sort((a: any, b: any) => {
+        const tA = Math.max(getT(a.createdAt), getT(a.updatedAt));
+        const tB = Math.max(getT(b.createdAt), getT(b.updatedAt));
+        return tB - tA;
+      });
+      setProducts(productsData);
       
       const articlesSnap = await getDocs(collection(db, 'articles'));
-      setArticles(articlesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      const articlesData = articlesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      // Robust Sort by newest
+      articlesData.sort((a: any, b: any) => {
+        const tA = Math.max(getT(a.createdAt), getT(a.updatedAt));
+        const tB = Math.max(getT(b.createdAt), getT(b.updatedAt));
+        return tB - tA;
+      });
+      setArticles(articlesData);
 
       const { getDoc } = await import('firebase/firestore');
       const contentSnap = await getDoc(doc(db, 'siteContent', 'landingPage'));
@@ -132,8 +153,13 @@ export default function Admin() {
       if (settingsSnap.exists()) {
         setSettings((prev: any) => ({ ...prev, ...settingsSnap.data() }));
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
+      if (e.message && e.message.includes('Quota exceeded')) {
+        alert("Batas kuota gratis Firestore hari ini telah tercapai. Data tidak dapat dimuat atau disimpan sampai kuota direset besok.");
+      } else {
+        notifyError(e.message || "Gagal memuat data dari database.");
+      }
     }
   };
 
@@ -170,6 +196,11 @@ export default function Admin() {
 
   const notifySuccess = (msg: string) => {
     alert(msg); // Replace with nice toast in future if needed
+  };
+
+  const notifyError = (msg: string) => {
+    console.error(msg);
+    alert("Kesalahan: " + msg);
   };
 
   const handleSaveContent = async () => {
@@ -577,10 +608,13 @@ export default function Admin() {
           {/* TAB: PRODUCTS */}
           {activeTab === 'products' && (
             <div className="space-y-8 animate-in fade-in duration-500">
-               <div>
-                 <h2 className="text-3xl font-serif text-brand-charcoal">Katalog Produk</h2>
-                 <p className="text-stone-500 mt-1">Kelola invetori produk yang ditampilkan di beranda.</p>
-               </div>
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-3xl font-serif text-brand-charcoal">Katalog Produk</h2>
+                  <button onClick={loadData} className="text-stone-500 hover:text-brand-charcoal transition-all flex items-center gap-2 text-sm bg-stone-100 hover:bg-stone-200 px-3 py-1.5 rounded-md">
+                    <RefreshCw className="w-4 h-4"/> Segarkan Data
+                  </button>
+                </div>
+                <p className="text-stone-500 mt-1 mb-6">Kelola invetori produk yang ditampilkan di beranda.</p>
 
                <SectionBox title={newProduct.id ? "Edit Produk" : "Tambah Produk Baru"}>
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

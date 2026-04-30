@@ -69,13 +69,30 @@ export default function LandingPage() {
     waAdmin: "0895630454035"
   });
 
+  const [errorHeader, setErrorHeader] = useState<string | null>(null);
+
   useEffect(() => {
     async function loadData() {
       try {
         const productsSnap = await getDocs(collection(db, 'products'));
         const productsData = productsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        // Sort by newest (createdAt or updatedAt)
+        productsData.sort((a: any, b: any) => {
+          const getT = (val: any) => {
+            if (!val) return 0;
+            if (val.toMillis) return val.toMillis();
+            const d = new Date(val);
+            return isNaN(d.getTime()) ? (typeof val === 'number' ? val : 0) : d.getTime();
+          };
+          const tA = Math.max(getT(a.createdAt), getT(a.updatedAt));
+          const tB = Math.max(getT(b.createdAt), getT(b.updatedAt));
+          return tB - tA;
+        });
         setProducts(productsData);
       } catch (err: any) {
+        if (err.message && err.message.includes('Quota exceeded')) {
+          setErrorHeader("Batas kuota harian tercapai. Beberapa data mungkin tidak muncul sementara.");
+        }
         if (err.message && err.message.includes('permission')) {
           handleFirestoreError(err, OperationType.LIST, 'products');
         } else {
@@ -150,6 +167,11 @@ export default function LandingPage() {
         <meta property="og:url" content="https://nakaduo.com/" />
       </Helmet>
       <Navbar />
+      {errorHeader && (
+        <div className="fixed top-20 left-0 right-0 z-[60] bg-brand-bronze text-white text-[10px] font-mono uppercase tracking-widest py-2 text-center">
+          {errorHeader}
+        </div>
+      )}
       <main>
         <Hero content={content} />
         <WhySection content={content} />

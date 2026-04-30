@@ -26,8 +26,11 @@ export default function Blog() {
         const settingsSnap = await getDoc(doc(db, 'settings', 'general'));
         if (settingsSnap.exists()) setSettings(settingsSnap.data());
 
-      } catch (err) {
+      } catch (err: any) {
         console.error("Error fetching articles:", err);
+        if (err.message && err.message.includes('Quota exceeded')) {
+          alert("Batas kuota harian tercapai. Beberapa artikel mungkin tidak muncul sementara.");
+        }
       } finally {
         setLoading(false);
       }
